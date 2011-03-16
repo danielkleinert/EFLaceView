@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+<!DOCTYPE database SYSTEM "file:///System/Library/DTDs/CoreData.dtd">
+
+<database>
+    <databaseInfo>
+        <version>134481920</version>
+        <UUID>8397C901-2ABF-40EB-8270-BF0AF5CE8F44</UUID>
+        <nextObjectID>117</nextObjectID>
+        <metadata></metadata>
+    </databaseInfo>
+    <object type="OUTPUTHOLE" id="z104">
+        <attribute name="label" type="string">output  label</attribute>
+        <attribute name="position" type="int16">1</attribute>
+        <relationship name="data" type="1/1" destination="DATA" idrefs="z111"></relationship>
+        <relationship name="laces" type="0/0" destination="INPUTHOLE" idrefs="z105"></relationship>
+    </object>
+    <object type="INPUTHOLE" id="z105">
+        <attribute name="label" type="string">I #1</attribute>
+        <attribute name="position" type="int16">1</attribute>
+        <relationship name="data" type="1/1" destination="DATA" idrefs="z109"></relationship>
+        <relationship name="laces" type="0/0" destination="OUTPUTHOLE" idrefs="z103 z104"></relationship>
+    </object>
+    <object type="OUTPUTHOLE" id="z107">
+        <attribute name="label" type="string">O #2</attribute>
+        <attribute name="position" type="int16">1</attribute>
+        <relationship name="data" type="1/1" destination="DATA" idrefs="z113"></relationship>
+        <relationship name="laces" type="0/0" destination="INPUTHOLE" idrefs="z108"></relationship>
+    </object>
+    <object type="INPUTHOLE" id="z108">
+        <attribute name="label" type="string">input label</attribute>
+        <attribute name="position" type="int16">1</attribute>
+        <relationship name="data" type="1/1" destination="DATA" idrefs="z111"></relationship>
+        <relationship name="laces" type="0/0" destination="OUTPUTHOLE" idrefs="z103 z107"></relationship>
+    </object>
+    <object type="INPUTHOLE" id="z110">
+        <attribute name="label" type="string">Input #1</attribute>
+        <attribute name="position" type="int16">2</attribute>
+        <relationship name="data" type="1/1" destination="DATA" idrefs="z102"></relationship>
+        <relationship name="laces" type="0/0" destination="OUTPUTHOLE" idrefs="z115"></relationship>
+    </object>
+    <object type="OUTPUTHOLE" id="z112">
+        <attribute name="label" type="string">Output #1</attribute>
+        <attribute name="position" type="int16">1</attribute>
+        <relationship name="data" type="1/1" destination="DATA" idrefs="z102"></relationship>
+        <relationship name="laces" type="0/0" destination="INPUTHOLE" idrefs="z117"></relationship>
+    </object>
+    <object type="OUTPUTHOLE" id="z114">
+        <attribute name="label" type="string">O #1</attribute>
+        <attribute name="position" type="int16">1</attribute>
+        <relationship name="data" type="1/1" destination="DATA" idrefs="z113"></relationship>
+        <relationship name="laces" type="0/0" destination="INPUTHOLE" idrefs="z116"></relationship>
+    </object>
+    <object type="OUTPUTHOLE" id="z115">
+        <attribute name="label" type="string">O #3</attribute>
+        <attribute name="position" type="int16">1</attribute>
+        <relationship name="data" type="1/1" destination="DATA" idrefs="z113"></relationship>
+        <relationship name="laces" type="0/0" destination="INPUTHOLE" idrefs="z110"></relationship>
+    </object>
+    <object type="INPUTHOLE" id="z116">
+        <attribute name="label" type="string">Input #2</attribute>
+        <attribute name="position" type="int16">1</attribute>
+        <relationship name="data" type="1/1" destination="DATA" idrefs="z102"></relationship>
+        <relationship name="laces" type="0/0" destination="OUTPUTHOLE" idrefs="z114"></relationship>
+    </object>
+    <object type="INPUTHOLE" id="z117">
+        <attribute name="label" type="string">I #2</attribute>
+        <attribute name="position" type="int16">2</attribute>
+        <relationship name="data" type="1/1" destination="DATA" idrefs="z109"></relationship>
+        <relationship name="laces" type="0/0" destination="OUTPUTHOLE" idrefs="z112"></relationship>
+    </object>
+    <object type="OUTPUTHOLE" id="z103">
+        <attribute name="label" type="string">Output #2</attribute>
+        <attribute name="position" type="int16">2</attribute>
+        <relationship name="data" type="1/1" destination="DATA" idrefs="z102"></relationship>
+        <relationship name="laces" type="0/0" destination="INPUTHOLE" idrefs="z105 z108"></relationship>
+    </object>
+    <object type="DATA" id="z109">
+        <attribute name="colorasdata" type="binary">YnBsaXN0MDDUAQIDBAUGBwpZJGFyY2hpdmVyWCR2ZXJzaW9uVCR0b3BYJG9iamVjdHNfEA9OU0tl
+eWVkQXJjaGl2ZXISAAGGoNEICVRyb290gAGjCwwTVSRudWxs0w0ODxARElVOU1JHQlxOU0NvbG9yU3BhY2VWJGNsYXNzTxAYMCAwLjYwMDAwMDAyIDAuNjAwMDAwMDIAEAGAAtIUFRYXWCRjbGFzc2VzWiRjbGFzc25hbWWiFxhXTlNDb2xvclhOU09iamVjdAgRGyQpMkRJTFFTV11kand+mZudoqu2ucEAAAAAAAABAQAAAAAAAAAZAAAAAAAAAAAAAAAAAAAAyg==
+</attribute>
+        <attribute name="height" type="float">74</attribute>
+        <attribute name="originx" type="float">747</attribute>
+        <attribute name="originy" type="float">318</attribute>
+        <attribute name="tag" type="int16">1</attribute>
+        <attribute name="title" type="string">End Object</attribute>
+        <attribute name="verticaloffset" type="float">10</attribute>
+        <attribute name="width" type="float">93.62207</attribute>
+        <relationship name="inputs" type="0/0" destination="INPUTHOLE" idrefs="z105 z117"></relationship>
+        <relationship name="outputs" type="0/0" destination="OUTPUTHOLE"></relationship>
+    </object>
+    <object type="DATA" id="z106">
+        <attribute name="colorasdata" type="binary">YnBsaXN0MDDUAQIDBAUGBwpZJGFyY2hpdmVyWCR2ZXJzaW9uVCR0b3BYJG9iamVjdHNfEA9OU0tl
+eWVkQXJjaGl2ZXISAAGGoNEICVRyb290gAGjCwwTVSRudWxs0w0ODxARElVOU1JHQlxOU0NvbG9yU3BhY2VWJGNsYXNzTxAYMSAwLjgwMDAwMDAxIDAuNDAwMDAwMDEAEAGAAtIUFRYXWCRjbGFzc2VzWiRjbGFzc25hbWWiFxhXTlNDb2xvclhOU09iamVjdAgRGyQpMkRJTFFTV11kand+mZudoqu2ucEAAAAAAAABAQAAAAAAAAAZAAAAAAAAAAAAAAAAAAAAyg==
+</attribute>
+        <attribute name="height" type="float">48</attribute>
+        <attribute name="originx" type="float">434</attribute>
+        <attribute name="originy" type="float">655</attribute>
+        <attribute name="tag" type="int16">1</attribute>
+        <attribute name="title" type="string">Démo Title</attribute>
+        <attribute name="verticaloffset" type="float">10</attribute>
+        <attribute name="width" type="float">150</attribute>
+        <relationship name="inputs" type="0/0" destination="INPUTHOLE"></relationship>
+        <relationship name="outputs" type="0/0" destination="OUTPUTHOLE"></relationship>
+    </object>
+    <object type="DATA" id="z102">
+        <attribute name="colorasdata" type="binary">YnBsaXN0MDDUAQIDBAUGBwpZJGFyY2hpdmVyWCR2ZXJzaW9uVCR0b3BYJG9iamVjdHNfEA9OU0tl
+eWVkQXJjaGl2ZXISAAGGoNEICVRyb290gAGjCwwTVSRudWxs0w0ODxARElVOU1JHQlxOU0NvbG9yU3BhY2VWJGNsYXNzTxAhMC4zNDkwMDQzNiAwLjQ5OTMzNjI0IDAuNjcyMTI5MzkAEAGAAtIUFRYXWCRjbGFzc2VzWiRjbGFzc25hbWWiFxhXTlNDb2xvclhOU09iamVjdAgRGyQpMkRJTFFTV11kand+oqSmq7S/wsoAAAAAAAABAQAAAAAAAAAZAAAAAAAAAAAAAAAAAAAA0w==
+</attribute>
+        <attribute name="height" type="float">64</attribute>
+        <attribute name="originx" type="float">284</attribute>
+        <attribute name="originy" type="float">365</attribute>
+        <attribute name="tag" type="int16">1</attribute>
+        <attribute name="title" type="string">Default object</attribute>
+        <attribute name="verticaloffset" type="float">0</attribute>
+        <attribute name="width" type="float">138.9033</attribute>
+        <relationship name="inputs" type="0/0" destination="INPUTHOLE" idrefs="z110 z116"></relationship>
+        <relationship name="outputs" type="0/0" destination="OUTPUTHOLE" idrefs="z112 z103"></relationship>
+    </object>
+    <object type="DATA" id="z111">
+        <attribute name="colorasdata" type="binary">YnBsaXN0MDDUAQIDBAUGBwpZJGFyY2hpdmVyWCR2ZXJzaW9uVCR0b3BYJG9iamVjdHNfEA9OU0tl
+eWVkQXJjaGl2ZXISAAGGoNEICVRyb290gAGjCwwTVSRudWxs0w0ODxAREldOU1doaXRlXE5TQ29sb3JTcGFjZVYkY2xhc3NEMC41ABADgALSFBUWF1gkY2xhc3Nlc1okY2xhc3NuYW1lohcYV05TQ29sb3JYTlNPYmplY3QIERskKTJESUxRU1ddZGx5gIWHiY6XoqWtAAAAAAAAAQEAAAAAAAAAGQAAAAAAAAAAAAAAAAAAALY=
+</attribute>
+        <attribute name="height" type="float">61</attribute>
+        <attribute name="originx" type="float">420</attribute>
+        <attribute name="originy" type="float">215</attribute>
+        <attribute name="tag" type="int16">1</attribute>
+        <attribute name="title" type="string">new object</attribute>
+        <attribute name="verticaloffset" type="float">10</attribute>
+        <attribute name="width" type="float">151.49609375</attribute>
+        <relationship name="inputs" type="0/0" destination="INPUTHOLE" idrefs="z108"></relationship>
+        <relationship name="outputs" type="0/0" destination="OUTPUTHOLE" idrefs="z104"></relationship>
+    </object>
+    <object type="DATA" id="z113">
+        <attribute name="colorasdata" type="binary">YnBsaXN0MDDUAQIDBAUGBwpZJGFyY2hpdmVyWCR2ZXJzaW9uVCR0b3BYJG9iamVjdHNfEA9OU0tl
+eWVkQXJjaGl2ZXISAAGGoNEICVRyb290gAGjCwwTVSRudWxs0w0ODxARElVOU1JHQlxOU0NvbG9yU3BhY2VWJGNsYXNzTxAYMSAwLjYwMDAwMDAyIDAuNDAwMDAwMDEAEAGAAtIUFRYXWCRjbGFzc2VzWiRjbGFzc25hbWWiFxhXTlNDb2xvclhOU09iamVjdAgRGyQpMkRJTFFTV11kand+mZudoqu2ucEAAAAAAAABAQAAAAAAAAAZAAAAAAAAAAAAAAAAAAAAyg==
+</attribute>
+        <attribute name="height" type="float">87</attribute>
+        <attribute name="originx" type="float">81</attribute>
+        <attribute name="originy" type="float">265</attribute>
+        <attribute name="tag" type="int16">1</attribute>
+        <attribute name="title" type="string">Start Object</attribute>
+        <attribute name="verticaloffset" type="float">10</attribute>
+        <attribute name="width" type="float">103</attribute>
+        <relationship name="inputs" type="0/0" destination="INPUTHOLE"></relationship>
+        <relationship name="outputs" type="0/0" destination="OUTPUTHOLE" idrefs="z107 z114 z115"></relationship>
+    </object>
+</database>

@@ -1,0 +1,26 @@
+12th August 2006
+Fixed a CoreData error in demo
+Added a resize feature in subviews (right bottom corner)
+Added a "rubberband" selection feature
+
+7th August 2006
+The laces are now data-driven, and not view-driven anymore.
+Everything can be bound to a CoreData model.
+Added smooth autoscrolling.
+
+6th August 2006
+The bindings are made with data, not with view anymore
+
+
+3rd August 2006
+
+Thanks to Robert Pointon :
+Added curved boxes with gradient.
+Better hit detection for bezier spline.
+Can now drag the 'end' of a lace so that it breaks the last connection and recontinues the drag.
+
+Thanks to Edouard Fischer :
+Better rounded corners of boxes.
+Changed names : no more 'strings' (except NSStrings), we now have 'holes' for inputs and outputs in a box, and 'laces' to connect them.
+Holes are now a NSDictionary with 3 objects : a label, an EFView and a position.
+Laces are now a NSDictionary with 2 objects : a startHole and an endHole.
