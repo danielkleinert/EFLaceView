@@ -65,7 +65,7 @@
     NSPrintOperation *op = [NSPrintOperation
                 printOperationWithView:printView
 							 printInfo:[self printInfo]];
-    [op setShowPanels:showPanels];
+    [op setShowsPrintPanel:showPanels];
     if (showPanels) {
         // Add accessory view, if needed
     }

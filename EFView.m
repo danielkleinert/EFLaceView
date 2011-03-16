@@ -286,7 +286,7 @@ int compare(id view1,id view2, void *context)
 
 - (NSArray *)orderedHoles:(NSSet *)aSet
 {
-	NSSortDescriptor* sort = [[NSSortDescriptor alloc] initWithKey:@"position" ascending:YES];
+	NSSortDescriptor* sort = [[[NSSortDescriptor alloc] initWithKey:@"position" ascending:YES] autorelease];
 	NSArray* result = [[aSet allObjects]sortedArrayUsingDescriptors:[NSArray arrayWithObject:sort]];
 	return result;
 	
@@ -643,13 +643,13 @@ int compare(id view1,id view2, void *context)
 		//make label observed by the view for changes on label or on position
 		NSEnumerator *enu = [inserted objectEnumerator];
 		id anObject;
-		while (anObject = [enu nextObject]) {
-			[anObject addObserver:self forKeyPath:@"label" options:nil context:_inoutputObservationContext];
-			[anObject addObserver:self forKeyPath:@"position" options:nil context:_inoutputObservationContext];
+		while ((anObject = [enu nextObject])) {
+			[anObject addObserver:self forKeyPath:@"label" options:0 context:_inoutputObservationContext];
+			[anObject addObserver:self forKeyPath:@"position" options:0 context:_inoutputObservationContext];
 		}
 		
 		enu = [removed objectEnumerator];
-		while (anObject = [enu nextObject]) {
+		while ((anObject = [enu nextObject])) {
 			[anObject removeObserver:self forKeyPath:@"label"];
 			[anObject removeObserver:self forKeyPath:@"position"];
 		}
@@ -668,7 +668,7 @@ int compare(id view1,id view2, void *context)
 		[self setWidth:MAX([self minimalSize].width,[self width])];
 		[self setHeight:MAX([self minimalSize].height,[self height])];
 	}
-	if ((keyPath = @"position") && (context == _inoutputObservationContext) ) {
+	if ((keyPath == @"position") && (context == _inoutputObservationContext) ) {
 		//redraw superview (laces may have changed because of positions of labels)
 		[[self superview] setNeedsDisplay:YES];
 		

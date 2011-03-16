@@ -57,7 +57,11 @@ float treshold(float x,float tr)
 {
 	[self exposeBinding:@"dataObjects"];
 	[self exposeBinding:@"selectionIndexes"];
-	[self setKeys:[NSArray arrayWithObjects:@"dataObjects",nil] triggerChangeNotificationsForDependentKey:@"laces"];
+}
+
++ (NSSet *)keyPathsForValuesAffectingLaces
+{
+    return [NSSet setWithObjects:@"dataObjects", nil];
 }
 
 - (NSArray *)exposedBindings
@@ -89,7 +93,7 @@ float treshold(float x,float tr)
 		[self setSelectionIndexesKeyPath:observableKeyPath];
 		[_selectionIndexesContainer addObserver:self
 									 forKeyPath:_selectionIndexesKeyPath
-										options:nil
+										options:NSKeyValueObservingOptionInitial
 										context:_selectionIndexesObservationContext];
     }
 	[super bind:bindingName
@@ -177,7 +181,7 @@ float treshold(float x,float tr)
 		{
 			[newDataObject addObserver:self
 							forKeyPath:key
-							   options:nil
+							   options:0
 							   context:_propertyObservationContext];
 		}
 	}
@@ -348,7 +352,7 @@ float treshold(float x,float tr)
 {
 	NSEnumerator *enu = [[self subviews] objectEnumerator];
 	EFView* aView;
-	while (aView = [enu nextObject]) {
+	while ((aView = [enu nextObject])) {
 		if ([aView valueForKey:@"data"] == aData) {
 			return aView;
 		}
@@ -373,25 +377,25 @@ float treshold(float x,float tr)
 
 - (NSMutableArray *)laces
 {
-	NSMutableArray* _laces = [[NSMutableArray alloc]init];
+	NSMutableArray* _laces = [[[NSMutableArray alloc]init] autorelease];
 	
 	NSEnumerator *startObjects = [[self dataObjects] objectEnumerator];
 	id startObject;
-	while (startObject = [startObjects nextObject])
+	while ((startObject = [startObjects nextObject]))
 	{
 		id startHoles = [startObject valueForKey:@"outputs"];
 		if ([startHoles count]>0)
 		{
 			NSEnumerator *startHolesEnum = [startHoles objectEnumerator];
 			id startHole;
-			while (startHole = [startHolesEnum nextObject])
+			while ((startHole = [startHolesEnum nextObject]))
 			{
 				NSSet * endHoles = [startHole valueForKey:@"laces"];
 				if ([endHoles count]>0)
 				{
 					NSEnumerator * endHolesEnum = [endHoles objectEnumerator];
 					id endHole;
-					while (endHole = [endHolesEnum nextObject])
+					while ((endHole = [endHolesEnum nextObject]))
 					{
 						NSMutableDictionary *aDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:startHole,@"startHole",endHole,@"endHole",nil];
 						[_laces addObject:aDict];
@@ -482,7 +486,7 @@ float treshold(float x,float tr)
 	// Draw laces
 	NSEnumerator *startObjects = [[self dataObjects] objectEnumerator];
 	id startObject;
-	while (startObject = [startObjects nextObject])
+	while ((startObject = [startObjects nextObject]))
 	{
 		id startHoles = [startObject valueForKey:@"outputs"];
 		if ([startHoles count]>0)
@@ -490,7 +494,7 @@ float treshold(float x,float tr)
 			EFView* startView = [self viewForData:startObject];
 			NSEnumerator *startHolesEnum = [startHoles objectEnumerator];
 			id startHole;
-			while (startHole = [startHolesEnum nextObject])
+			while ((startHole = [startHolesEnum nextObject]))
 			{
 				NSSet * endHoles = [startHole valueForKey:@"laces"];
 				if ([endHoles count]>0)
@@ -498,7 +502,7 @@ float treshold(float x,float tr)
 					NSPoint startPoint = [startView startHolePoint:startHole];
 					NSEnumerator * endHolesEnum = [endHoles objectEnumerator];
 					id endHole;
-					while (endHole = [endHolesEnum nextObject])
+					while ((endHole = [endHolesEnum nextObject]))
 					{
 						
 						id endData = [endHole valueForKey:@"data"];
@@ -768,7 +772,7 @@ float treshold(float x,float tr)
 
 							NSEnumerator *enu = [[self subviews] objectEnumerator];
 							EFView* aView;
-							while (aView = [enu nextObject])
+							while ((aView = [enu nextObject]))
 							{
 								[self selectView:aView state:NSIntersectsRect([aView frame],rubber)];
 							}
@@ -832,14 +836,14 @@ float treshold(float x,float tr)
 	
 	_isMaking= YES;
 	BOOL keepOn = YES;
-	BOOL isInside = YES;
+	//BOOL isInside = YES;
 	
 	[[NSCursor crosshairCursor] set];
 	while (keepOn) {
 		theEvent = [[self window] nextEventMatchingMask: NSLeftMouseUpMask |
 			NSLeftMouseDraggedMask];
 		mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
-		isInside = [self mouse:mouseLoc inRect:[self bounds]];
+		//isInside = [self mouse:mouseLoc inRect:[self bounds]];
 		switch ([theEvent type]) {
 			case NSLeftMouseDragged:
 				_endPoint = mouseLoc;
