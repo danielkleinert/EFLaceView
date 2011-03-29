@@ -13,6 +13,7 @@
 //  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #import "EFLaceView.h"
 #import "EFView.h"
+#import <Carbon/Carbon.h> // 4 keyCodes
 
 static void *_propertyObservationContext = (void *)1091;
 static void *_dataObjectsObservationContext = (void *)1092;
@@ -93,7 +94,7 @@ float treshold(float x,float tr)
 		[self setSelectionIndexesKeyPath:observableKeyPath];
 		[_selectionIndexesContainer addObserver:self
 									 forKeyPath:_selectionIndexesKeyPath
-										options:NSKeyValueObservingOptionInitial
+										options:0
 										context:_selectionIndexesObservationContext];
     }
 	[super bind:bindingName
@@ -377,7 +378,7 @@ float treshold(float x,float tr)
 
 - (NSMutableArray *)laces
 {
-	NSMutableArray* _laces = [[[NSMutableArray alloc]init] autorelease];
+	NSMutableArray* _laces = [[NSMutableArray alloc]init];
 	
 	NSEnumerator *startObjects = [[self dataObjects] objectEnumerator];
 	id startObject;
@@ -702,7 +703,7 @@ float treshold(float x,float tr)
 
 - (void)keyDown:(NSEvent*)theEvent
 {
-	if(([theEvent keyCode] == 51) && _selectedLace)
+	if(([theEvent keyCode] == kVK_Delete) && _selectedLace)
 	{
 		id startHole = [_selectedLace valueForKey:@"startHole"];
 		id endHole = [_selectedLace valueForKey:@"endHole"];
@@ -723,7 +724,17 @@ float treshold(float x,float tr)
 		return;
 	}
 	
-	if (([theEvent keyCode] == 53) && ([[self selectionIndexes] count]>0))
+	if(([theEvent keyCode] == kVK_Delete) && [self selectionIndexes])
+	{
+		if ([self.dataObjectsContainer respondsToSelector:@selector(remove:)])
+		{
+			[self.dataObjectsContainer remove:self];
+			[self setNeedsDisplay:YES];
+			return;
+		}
+	}
+	
+	if (([theEvent keyCode] == kVK_Escape) && ([[self selectionIndexes] count]>0))
 	{
 		[self deselectViews];
 		[self setNeedsDisplay:YES];
@@ -774,7 +785,7 @@ float treshold(float x,float tr)
 							EFView* aView;
 							while ((aView = [enu nextObject]))
 							{
-								[self selectView:aView state:NSIntersectsRect([aView frame],rubber)];
+								//[self selectView:aView state:NSIntersectsRect([aView frame],rubber)];
 							}
 							[self setNeedsDisplay:YES];
 							break;

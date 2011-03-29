@@ -286,7 +286,7 @@ int compare(id view1,id view2, void *context)
 
 - (NSArray *)orderedHoles:(NSSet *)aSet
 {
-	NSSortDescriptor* sort = [[[NSSortDescriptor alloc] initWithKey:@"position" ascending:YES] autorelease];
+	NSSortDescriptor* sort = [[NSSortDescriptor alloc] initWithKey:@"position" ascending:YES];
 	NSArray* result = [[aSet allObjects]sortedArrayUsingDescriptors:[NSArray arrayWithObject:sort]];
 	return result;
 	
