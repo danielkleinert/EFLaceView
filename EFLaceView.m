@@ -132,22 +132,12 @@ float treshold(float x,float tr)
 	{
 		return;
 	}
-	/*
-	 Register to observe each of the new dataObjects, and
-	 each of their observable properties -- we need old and new
-	 values for drawingBounds to figure out what our dirty rect
-	 */
-	NSEnumerator *dataObjectsEnumerator = [dataObjects objectEnumerator];
-	
-	id newDataObject;
-	
-    while ((newDataObject = [dataObjectsEnumerator nextObject]))
+	/* Register to observe each of the new dataObjects, and each of their observable properties -- we need old and new values for drawingBounds to figure out what our dirty rect */
+
+    for (id newDataObject in dataObjects)
 	{
-		[newDataObject addObserver:self
-						forKeyPath:@"drawingBounds"
-						   options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld)
-						   context:_propertyObservationContext];
-		EFView *dummy = [[EFView alloc] init];
+		[newDataObject addObserver:self forKeyPath:@"drawingBounds" options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld) context:_propertyObservationContext];
+		EFView *dummy = [[[EFView alloc] init] autorelease];
 		[self addSubview:dummy];
 		
 		[self scrollRectToVisible:[dummy bounds]]; //make new view visible if view in scrolling view
@@ -175,15 +165,9 @@ float treshold(float x,float tr)
 		
 		[dummy setValue:newDataObject forKeyPath:@"data"];
 		
-		NSArray *keys = [[newDataObject class] keysForNonBoundsProperties];
-		NSEnumerator *keyEnumerator = [keys objectEnumerator];
-		NSString *key;
-		while ((key = [keyEnumerator nextObject]))
-		{
-			[newDataObject addObserver:self
-							forKeyPath:key
-							   options:0
-							   context:_propertyObservationContext];
+		for (NSString *key in [[newDataObject class] keysForNonBoundsProperties])
+		{	//@"tag",@"inputs",@"outputs",@"title",@"titleColor",@"verticalOffset",@"originX",@"originY",@"width",@"height"
+			[newDataObject addObserver:self forKeyPath:key options:0 context:_propertyObservationContext];
 		}
 	}
 }
@@ -194,26 +178,22 @@ float treshold(float x,float tr)
 	{
 		return;
 	}
-	
-	NSEnumerator *dataObjectsEnumerator = [dataObjects objectEnumerator];
-	
-    id oldDataObject;
-    while ((oldDataObject = [dataObjectsEnumerator nextObject]))
+
+    for (id oldDataObject in dataObjects)
 	{
 		[oldDataObject removeObserver:self forKeyPath:@"drawingBounds"];
-		NSArray *keys = [[oldDataObject class] keysForNonBoundsProperties];
-		NSEnumerator *keyEnumerator = [keys objectEnumerator];
-		NSString *key;
-		while ((key = [keyEnumerator nextObject]))
+		for  (NSString *key in [[oldDataObject class] keysForNonBoundsProperties])
 		{
 			[oldDataObject removeObserver:self forKeyPath:key];
 		}
 		[oldDataObject unbind:@"originX"];
 		[oldDataObject unbind:@"originY"];
+		[oldDataObject unbind:@"width"];
+		[oldDataObject unbind:@"heigth"];
+		[oldDataObject unbind:@"inputs"];
+		[oldDataObject unbind:@"outputs"];
 		
-		EFView *aView;
-		NSEnumerator *enu = [[self subviews] objectEnumerator];
-		while ((aView = [enu nextObject])) {
+		for (EFView *aView in [self subviews]) {
 			if ([aView valueForKey:@"data"] == oldDataObject) {
 				
 				[aView unbind:@"title"];

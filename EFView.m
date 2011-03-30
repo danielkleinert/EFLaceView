@@ -81,10 +81,24 @@ int compare(id view1,id view2, void *context)
     return self;
 }
 
+- (void)removeFromSuperview {
+	for (id anObject in _inputs) {
+		[anObject removeObserver:self forKeyPath:@"label"];
+		[anObject removeObserver:self forKeyPath:@"position"];
+	}
+	for (id anObject in _outputs) {
+		[anObject removeObserver:self forKeyPath:@"label"];
+		[anObject removeObserver:self forKeyPath:@"position"];
+	}
+	[super removeFromSuperview];
+}
+
 - (void)dealloc {
 	[self removeObserver:self forKeyPath:@"inputs"];
 	[self removeObserver:self forKeyPath:@"outputs"];
 	[_stringAttributes release];
+	[_inputs release];
+	[_outputs release];
 	[super dealloc];
 }
 
@@ -265,7 +279,7 @@ int compare(id view1,id view2, void *context)
 
 - (NSMutableSet *)inputs
 {
-    return [_inputs retain]; 
+    return _inputs; 
 }
 
 - (void)setInputs:(NSMutableSet *)aSet
@@ -278,16 +292,14 @@ int compare(id view1,id view2, void *context)
 
 - (NSArray *)orderedInputs
 {
-	//NSSortDescriptor* sort = [[NSSortDescriptor alloc] initWithKey:@"position" ascending:YES];
-	//	NSArray* result = [[[self inputs] allObjects]sortedArrayUsingDescriptors:[NSArray arrayWithObject:sort]];
-	//	return result;
 	return [self orderedHoles:[self inputs]];
 }
 
 - (NSArray *)orderedHoles:(NSSet *)aSet
 {
 	NSSortDescriptor* sort = [[NSSortDescriptor alloc] initWithKey:@"position" ascending:YES];
-	NSArray* result = [[aSet allObjects]sortedArrayUsingDescriptors:[NSArray arrayWithObject:sort]];
+	NSArray* result = [[aSet allObjects] sortedArrayUsingDescriptors:[NSArray arrayWithObject:sort]];
+	[sort release];
 	return result;
 	
 }
@@ -295,7 +307,7 @@ int compare(id view1,id view2, void *context)
 #pragma mark outputs
 - (NSMutableSet *)outputs
 {
-	return [_outputs retain]; 
+	return _outputs; 
 }
 - (void)setOutputs:(NSMutableSet *)aSet
 {
@@ -622,10 +634,7 @@ int compare(id view1,id view2, void *context)
     return;
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath
-					  ofObject:(id)object 
-                        change:(NSDictionary *)change
-                       context:(void *)context
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (((keyPath == @"inputs") || keyPath == @"outputs") && (context == _inoutputObservationContext)) {
 		
@@ -641,15 +650,12 @@ int compare(id view1,id view2, void *context)
 		[removed minusSet:new];
 		
 		//make label observed by the view for changes on label or on position
-		NSEnumerator *enu = [inserted objectEnumerator];
-		id anObject;
-		while ((anObject = [enu nextObject])) {
+		for (id anObject in inserted) {
 			[anObject addObserver:self forKeyPath:@"label" options:0 context:_inoutputObservationContext];
 			[anObject addObserver:self forKeyPath:@"position" options:0 context:_inoutputObservationContext];
 		}
 		
-		enu = [removed objectEnumerator];
-		while ((anObject = [enu nextObject])) {
+		for (id anObject in removed) {
 			[anObject removeObserver:self forKeyPath:@"label"];
 			[anObject removeObserver:self forKeyPath:@"position"];
 		}
