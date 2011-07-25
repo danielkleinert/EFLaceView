@@ -29,6 +29,7 @@ static void *_selectionIndexesObservationContext = (void *)1093;
 #pragma mark -
 #pragma mark *** utility functions***
 
+float treshold(float x,float tr);
 float treshold(float x,float tr)
 {
 	return (x>0)?((x>tr)?x:tr):-x+tr;

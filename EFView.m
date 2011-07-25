@@ -27,7 +27,8 @@ static void *_inoutputObservationContext = (void *)1094;
 
 #pragma mark -
 #pragma mark *** utility functions ***
-int compare(id view1,id view2, void *context)
+NSComparisonResult compare(id view1,id view2, void *context);
+NSComparisonResult compare(id view1,id view2, void *context)
 {
 	// selected views are drawn on top of non selected ones
 	if (([view1 selected]) && (![view2 selected])) {
@@ -37,7 +38,7 @@ int compare(id view1,id view2, void *context)
 		return NSOrderedAscending;
 	}
 	//If both selected or both unselected, then the tag property is used
-	return ([view1 tag] > [view2 tag])?NSOrderedDescending:NSOrderedAscending;
+	return ([(EFView*)view1 tag] > [(EFView*)view2 tag])?NSOrderedDescending:NSOrderedAscending;
 }
 
 #pragma mark -

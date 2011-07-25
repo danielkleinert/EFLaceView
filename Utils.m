@@ -3,11 +3,12 @@
 
 // CoreGraphics gradient helpers
 typedef struct {
-  float red1, green1, blue1, alpha1;
-  float red2, green2, blue2, alpha2;
+  CGFloat red1, green1, blue1, alpha1;
+  CGFloat red2, green2, blue2, alpha2;
 } _twoColorsType;
 
-void _linearColorBlendFunction(void *info, const float *in, float *out) {
+void _linearColorBlendFunction(void *info, const CGFloat *in, CGFloat *out);
+void _linearColorBlendFunction(void *info, const CGFloat *in, CGFloat *out) {
   _twoColorsType *twoColors = info;
   out[0] = (1.0 - *in) * twoColors->red1 + *in * twoColors->red2;
   out[1] = (1.0 - *in) * twoColors->green1 + *in * twoColors->green2;
@@ -15,12 +16,13 @@ void _linearColorBlendFunction(void *info, const float *in, float *out) {
   out[3] = (1.0 - *in) * twoColors->alpha1 + *in * twoColors->alpha2;
 }
 
+void _linearColorReleaseInfoFunction(void *info);
 void _linearColorReleaseInfoFunction(void *info) {
   free(info);
 }
 
 static const CGFunctionCallbacks linearFunctionCallbacks = {0, &_linearColorBlendFunction, &_linearColorReleaseInfoFunction};
-static const float domainAndRange[8] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
+static const CGFloat domainAndRange[8] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
 
 
 
@@ -63,7 +65,7 @@ static const float domainAndRange[8] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
 
 - (void)gradientFillWithColor:(NSColor*)color {
 	// Take the color apart
-	float hue, saturation, brightness, alpha;
+	CGFloat hue, saturation, brightness, alpha;
 	[[color colorUsingColorSpaceName:NSDeviceRGBColorSpace] getHue:&hue saturation:&saturation brightness:&brightness alpha:&alpha];
 	// Create synthetic darker and lighter versions
 	NSColor *lighterColor = [NSColor colorWithDeviceHue:hue saturation:MAX(0.0, saturation-.12) brightness:MIN(1.0,brightness+0.30) alpha:alpha];
