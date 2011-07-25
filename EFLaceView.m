@@ -45,10 +45,6 @@ float treshold(float x,float tr)
 	return self;
 }
 
-- (void) dealloc {
-	
-	[super dealloc];
-}
 
 
 #pragma mark -
@@ -137,7 +133,7 @@ float treshold(float x,float tr)
     for (id newDataObject in dataObjects)
 	{
 		[newDataObject addObserver:self forKeyPath:@"drawingBounds" options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld) context:_propertyObservationContext];
-		EFView *dummy = [[[EFView alloc] init] autorelease];
+		EFView *dummy = [[EFView alloc] init];
 		[self addSubview:dummy];
 		
 		[self scrollRectToVisible:[dummy bounds]]; //make new view visible if view in scrolling view
@@ -229,12 +225,10 @@ float treshold(float x,float tr)
 		NSMutableArray *onlyNew = [_newDataObjects mutableCopy];
 		[onlyNew removeObjectsInArray:_oldDataObjects];
 		[self startObservingDataObjects:onlyNew];
-		[onlyNew release];
 		
 		NSMutableArray *removed = [_oldDataObjects mutableCopy];
 		[removed removeObjectsInArray:_newDataObjects];
 		[self stopObservingDataObjects:removed];
-		[removed release];
 		
 		[self setOldDataObjects:_newDataObjects];
 		[self setNeedsDisplay:YES];
@@ -290,7 +284,6 @@ float treshold(float x,float tr)
 - (void)setDataObjectsKeyPath:(NSString *)aDataObjectsKeyPath
 {
     if (_dataObjectsKeyPath != aDataObjectsKeyPath) {
-        [_dataObjectsKeyPath release];
         _dataObjectsKeyPath = [aDataObjectsKeyPath copy];
     }
 }
@@ -302,7 +295,6 @@ float treshold(float x,float tr)
 - (void)setSelectionIndexesKeyPath:(NSString *)aSelectionIndexesKeyPath
 {
     if (_selectionIndexesKeyPath != aSelectionIndexesKeyPath) {
-        [_selectionIndexesKeyPath release];
         _selectionIndexesKeyPath = [aSelectionIndexesKeyPath copy];
     }
 }
@@ -351,7 +343,6 @@ float treshold(float x,float tr)
 - (void)setOldDataObjects:(NSArray *)anOldDataObjects
 {
     if (_oldDataObjects != anOldDataObjects) {
-        [_oldDataObjects release];
         _oldDataObjects = [anOldDataObjects mutableCopy];
     }
 }
@@ -555,7 +546,7 @@ float treshold(float x,float tr)
 	unsigned int DataObjectIndex;
 	DataObjectIndex = [[self dataObjects] indexOfObject:[aView valueForKey:@"data"]];
 	
-	selection = [[[self selectionIndexes] mutableCopy] autorelease];
+	selection = [[self selectionIndexes] mutableCopy];
 	if (aBool) {
 		[(NSMutableIndexSet *)selection addIndex:DataObjectIndex];
 	}

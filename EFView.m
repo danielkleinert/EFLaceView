@@ -96,10 +96,6 @@ int compare(id view1,id view2, void *context)
 - (void)dealloc {
 	[self removeObserver:self forKeyPath:@"inputs"];
 	[self removeObserver:self forKeyPath:@"outputs"];
-	[_stringAttributes release];
-	[_inputs release];
-	[_outputs release];
-	[super dealloc];
 }
 
 
@@ -171,8 +167,7 @@ int compare(id view1,id view2, void *context)
 - (void)setTitleColor:(NSColor *)aColor
 {
 	if (aColor != [self titleColor]) {
-		[_titleColor release];
-		_titleColor = [aColor retain];
+		_titleColor = aColor;
 	}
 	[self setNeedsDisplay:YES];
 }
@@ -180,13 +175,12 @@ int compare(id view1,id view2, void *context)
 // title
 - (NSString *)title
 {
-	return (_title == nil)?@"":[_title retain];
+	return (_title == nil)?@"":_title;
 }
 - (void)setTitle:(NSString *)aTitle
 {
 	if (aTitle != _title) {
-		[_title release];
-		_title = [aTitle retain];
+		_title = aTitle;
 		[self setWidth:MAX([self minimalSize].width,[self width])];
 		[self setNeedsDisplay:YES];
 	}
@@ -285,8 +279,7 @@ int compare(id view1,id view2, void *context)
 - (void)setInputs:(NSMutableSet *)aSet
 {
 	if (aSet != _inputs) {
-		[_inputs release];
-		_inputs = [aSet retain];
+		_inputs = aSet;
 	}
 }
 
@@ -299,7 +292,6 @@ int compare(id view1,id view2, void *context)
 {
 	NSSortDescriptor* sort = [[NSSortDescriptor alloc] initWithKey:@"position" ascending:YES];
 	NSArray* result = [[aSet allObjects] sortedArrayUsingDescriptors:[NSArray arrayWithObject:sort]];
-	[sort release];
 	return result;
 	
 }
@@ -312,8 +304,7 @@ int compare(id view1,id view2, void *context)
 - (void)setOutputs:(NSMutableSet *)aSet
 {
 	if (aSet != _outputs) {
-		[_outputs release];
-		_outputs = [aSet retain];
+		_outputs = aSet;
 	}
 }
 - (NSArray *)orderedOutputs
@@ -665,8 +656,6 @@ int compare(id view1,id view2, void *context)
 			[anObject removeObserver:self forKeyPath:@"position"];
 		}
 		
-		[removed release];
-		[inserted release];
 		
 		//update size and redraw
 		[self setWidth:MAX([self minimalSize].width,[self width])];
