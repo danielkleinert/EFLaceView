@@ -441,7 +441,7 @@ int compare(id view1,id view2, void *context)
 	
 	NSEnumerator *enu = [[self inputs] objectEnumerator];
 	NSDictionary *aDict;
-	while ((aDict = [enu nextObject])) {
+	while ((aDict = [enu nextObject])) {		
 		NSBezierPath *path = [NSBezierPath bezierPath];
 		[path setLineWidth:1];
 		[[NSColor grayColor] set];
@@ -524,6 +524,11 @@ int compare(id view1,id view2, void *context)
 
 #pragma mark -
 #pragma mark *** events ***
+
+- (BOOL) acceptsFirstResponder
+{
+	return YES;
+}
 
 
 - (NSView *)hitTest:(NSPoint)aPoint

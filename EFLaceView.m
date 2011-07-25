@@ -20,7 +20,7 @@ static void *_dataObjectsObservationContext = (void *)1092;
 static void *_selectionIndexesObservationContext = (void *)1093;
 
 
-#warning TOTO : implement delegates
+#warning TODO : implement delegates
 
 
 
@@ -399,8 +399,7 @@ float treshold(float x,float tr)
 	// a lace is made of an outside gray line of width 5, and a inside insideColor(ed) line of width 3
 	
 	NSPoint p0 = NSMakePoint(startPoint.x,startPoint.y );
-	NSPoint p3 = NSMakePoint(endPoint
-							 .x,endPoint.y );
+	NSPoint p3 = NSMakePoint(endPoint.x,endPoint.y );
 	
 	NSPoint p1 = NSMakePoint(startPoint.x+treshold((endPoint.x - startPoint.x)/2,50),startPoint.y);
 	NSPoint p2 = NSMakePoint(endPoint.x -treshold((endPoint.x - startPoint.x)/2,50),endPoint.y);	
@@ -449,20 +448,20 @@ float treshold(float x,float tr)
 	[path stroke];
 }
 
-- (BOOL)isOpaque
-{
-	return YES;
-}
+//- (BOOL)isOpaque
+//{
+//	return YES;
+//}
 
 - (void)drawRect:(NSRect)rect
 {
 	
 	// Draw frame
-	NSEraseRect(rect);
-	if (![NSGraphicsContext currentContextDrawingToScreen])
-	{
-		NSFrameRect([self bounds]);
-	}
+//	NSEraseRect(rect);
+//	if (![NSGraphicsContext currentContextDrawingToScreen])
+//	{
+//		NSFrameRect([self bounds]);
+//	}
 	
 	// Draw laces
 	NSEnumerator *startObjects = [[self dataObjects] objectEnumerator];
@@ -494,7 +493,7 @@ float treshold(float x,float tr)
 						{
 							[self drawLinkFrom:startPoint
 											to:endPoint
-										 color:([NSGraphicsContext currentContextDrawingToScreen])?[NSColor whiteColor]:[NSColor yellowColor]];
+										 color:([NSGraphicsContext currentContextDrawingToScreen])?[NSColor selectedControlColor]:[NSColor yellowColor]];
 						}
 						else
 						{
@@ -704,11 +703,12 @@ float treshold(float x,float tr)
 		return;
 	}
 	
-	if(([theEvent keyCode] == kVK_Delete) && [self selectionIndexes])
+	if(([theEvent keyCode] == kVK_Delete) && [[self selectionIndexes] count]>0)
 	{
 		if ([self.dataObjectsContainer respondsToSelector:@selector(remove:)])
 		{
-			[self.dataObjectsContainer remove:self];
+			// remove selected item
+			[self.dataObjectsContainer performSelector:@selector(remove:) withObject:self];
 			[self setNeedsDisplay:YES];
 			return;
 		}
