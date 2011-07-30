@@ -190,7 +190,7 @@ float treshold(float x,float tr)
 		[oldDataObject unbind:@"inputs"];
 		[oldDataObject unbind:@"outputs"];
 		
-		for (EFView *aView in [self subviews]) {
+		for (EFView *aView in [[self subviews] copy]) {
 			if ([aView valueForKey:@"data"] == oldDataObject) {
 				
 				[aView unbind:@"title"];
