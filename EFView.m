@@ -22,10 +22,6 @@ static void *_inoutputObservationContext = (void *)1094;
 @implementation EFView
 
 #pragma mark -
-#pragma mark *** class ***
-
-
-#pragma mark -
 #pragma mark *** utility functions ***
 NSComparisonResult compare(id view1,id view2, void *context);
 NSComparisonResult compare(id view1,id view2, void *context)
@@ -70,14 +66,8 @@ NSComparisonResult compare(id view1,id view2, void *context)
 		[self setNeedsDisplay:YES];
 		
 		// need to update view when labels or positions are changed in inputs or ouputs
-		[self addObserver:self
-			   forKeyPath:@"inputs"
-				  options:(NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld)
-				  context:_inoutputObservationContext];
-		[self addObserver:self
-			   forKeyPath:@"outputs"
-				  options:(NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld)
-				  context:_inoutputObservationContext];
+		[self addObserver:self forKeyPath:@"inputs" options:(NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld) context:_inoutputObservationContext];
+		[self addObserver:self forKeyPath:@"outputs" options:(NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld) context:_inoutputObservationContext];
 	}
     return self;
 }
@@ -99,55 +89,48 @@ NSComparisonResult compare(id view1,id view2, void *context)
 	[self removeObserver:self forKeyPath:@"outputs"];
 }
 
-
-- (void)awakeFromNib
-{	
+- (void)awakeFromNib {	
 	[[self superview] sortSubviewsUsingFunction:compare context:nil];
 }
 
 #pragma mark -
 #pragma mark *** setters and accessors ***
 //vertical Offset
-- (float)verticalOffset
-{
+- (float)verticalOffset {
 	return _verticalOffset;
 }
-- (void)setVerticalOffset:(float)aValue
-{
+
+- (void)setVerticalOffset:(float)aValue {
 	_verticalOffset = MAX(aValue,0);	
 	[self setHeight:MAX([self minimalSize].height,[self height])];
 	[[self superview] setNeedsDisplay:YES];
 }
 
 //selected
-- (void)setSelected:(BOOL)state
-{
+- (void)setSelected:(BOOL)state {
 	EFLaceView* superView = (EFLaceView*)[self superview];
 	[superView sortSubviewsUsingFunction:compare context:nil];
-	
 	[self setNeedsDisplay:YES];
 }
-- (BOOL)selected
-{
+
+- (BOOL)selected {
 	EFLaceView* superView = (EFLaceView*)[self superview];
 	NSIndexSet *currentSelection = [superView selectionIndexes];
 	unsigned myIndex = [[superView dataObjects] indexOfObject:[self valueForKey:@"data"]];
 	bool selected = [currentSelection containsIndex:myIndex];
-	
 	return selected;
 }
-- (void)select
-{
+
+- (void)select {
 	[self setSelected:YES];
 }
-- (void)deselect
-{
+
+- (void)deselect {
 	[self setSelected:NO];
 }
 
 // tag
-- (void)setTag:(int)newTag
-{
+- (void)setTag:(int)newTag {
 	if ([self tag] != newTag) {
 		_tag = newTag;
 		[[self superview] sortSubviewsUsingFunction:compare context:nil];
@@ -155,18 +138,12 @@ NSComparisonResult compare(id view1,id view2, void *context)
 	}
 }
 
-- (int)tag
-{
-	return _tag;
-}
-
 // title color
-- (NSColor *)titleColor
-{
+- (NSColor *)titleColor {
 	return _titleColor;
 }
-- (void)setTitleColor:(NSColor *)aColor
-{
+
+- (void)setTitleColor:(NSColor *)aColor {
 	if (aColor != [self titleColor]) {
 		_titleColor = aColor;
 	}
@@ -174,12 +151,11 @@ NSComparisonResult compare(id view1,id view2, void *context)
 }
 
 // title
-- (NSString *)title
-{
+- (NSString *)title {
 	return (_title == nil)?@"":_title;
 }
-- (void)setTitle:(NSString *)aTitle
-{
+
+- (void)setTitle:(NSString *)aTitle {
 	if (aTitle != _title) {
 		_title = aTitle;
 		[self setWidth:MAX([self minimalSize].width,[self width])];
@@ -188,21 +164,16 @@ NSComparisonResult compare(id view1,id view2, void *context)
 }
 
 // drawingBounds
-- (NSDictionary *) drawingBounds
-{
+- (NSDictionary *) drawingBounds {
 	NSRect boundsFrame = [self frame];
-	float X = boundsFrame.origin.x;
-	float Y = boundsFrame.origin.y;
-	float W = boundsFrame.size.width;
-	float H = boundsFrame.size.height;
-	return [NSDictionary dictionaryWithObjectsAndKeys:
-		[NSNumber numberWithFloat:X],@"X",
-		[NSNumber numberWithFloat:Y],@"Y",
-		[NSNumber numberWithFloat:W],@"width",
-		[NSNumber numberWithFloat:H],@"height",nil];
+	NSNumber* X = [NSNumber numberWithFloat:boundsFrame.origin.x];
+	NSNumber* Y = [NSNumber numberWithFloat:boundsFrame.origin.y];
+	NSNumber* W = [NSNumber numberWithFloat:boundsFrame.size.width];
+	NSNumber* H = [NSNumber numberWithFloat:boundsFrame.size.height];
+	return [NSDictionary dictionaryWithObjectsAndKeys: X,@"X", Y,@"Y", W,@"width", H,@"height", nil];
 }
-- (void) setDrawingBounds:(NSDictionary *)aDict
-{
+
+- (void) setDrawingBounds:(NSDictionary *)aDict {
 	if (![[self drawingBounds] isEqualToDictionary:aDict]) {
 		float X = [[aDict objectForKey:@"X"] floatValue];
 		float Y = [[aDict objectForKey:@"Y"] floatValue];
@@ -215,25 +186,23 @@ NSComparisonResult compare(id view1,id view2, void *context)
 	}
 }
 
-- (float) originX
-{
+- (float) originX {
 	return [self frame].origin.x;
 }
-- (float) originY
-{
+
+- (float) originY {
 	return [self frame].origin.y;
 }
-- (float) width
-{
+
+- (float) width {
 	return [self frame].size.width;
 }
-- (float) height
-{
+
+- (float) height {
 	return [self frame].size.height;
 }
 
--(void) setOriginX:(float)aFloat
-{
+-(void) setOriginX:(float)aFloat {
 	if (aFloat != [self originX]) {
 		NSRect frame = [self frame];
 		frame.origin.x = aFloat;
@@ -241,8 +210,8 @@ NSComparisonResult compare(id view1,id view2, void *context)
 		[[self superview] setNeedsDisplay:YES];
 	}
 }
--(void) setOriginY:(float)aFloat
-{
+
+-(void) setOriginY:(float)aFloat {
 	if (aFloat != [self originY]) {
 		NSRect frame = [self frame];
 		frame.origin.y = aFloat;
@@ -250,8 +219,8 @@ NSComparisonResult compare(id view1,id view2, void *context)
 		[[self superview] setNeedsDisplay:YES];
 	}
 }
--(void) setWidth:(float)aFloat
-{
+
+-(void) setWidth:(float)aFloat {
 	if (aFloat != [self width]) {
 		NSRect frame = [self frame];
 		frame.size.width = MAX(aFloat,[self minimalSize].width);
@@ -259,8 +228,8 @@ NSComparisonResult compare(id view1,id view2, void *context)
 		[[self superview] setNeedsDisplay:YES];
 	}
 }
--(void) setHeight:(float)aFloat
-{
+
+-(void) setHeight:(float)aFloat {
 	if (aFloat != [self height]) {
 		NSRect frame = [self frame];
 		frame.size.height = MAX(aFloat,[self minimalSize].height);
@@ -272,53 +241,45 @@ NSComparisonResult compare(id view1,id view2, void *context)
 
 #pragma mark inputs
 
-- (NSMutableSet *)inputs
-{
+- (NSMutableSet *)inputs {
     return _inputs; 
 }
 
-- (void)setInputs:(NSMutableSet *)aSet
-{
+- (void)setInputs:(NSMutableSet *)aSet {
 	if (aSet != _inputs) {
 		_inputs = aSet;
 	}
 }
 
-- (NSArray *)orderedInputs
-{
+- (NSArray *)orderedInputs {
 	return [self orderedHoles:[self inputs]];
 }
 
-- (NSArray *)orderedHoles:(NSSet *)aSet
-{
+- (NSArray *)orderedHoles:(NSSet *)aSet {
 	NSSortDescriptor* sort = [[NSSortDescriptor alloc] initWithKey:@"position" ascending:YES];
 	NSArray* result = [[aSet allObjects] sortedArrayUsingDescriptors:[NSArray arrayWithObject:sort]];
 	return result;
-	
 }
 
 #pragma mark outputs
-- (NSMutableSet *)outputs
-{
+- (NSMutableSet *)outputs {
 	return _outputs; 
 }
-- (void)setOutputs:(NSMutableSet *)aSet
-{
+
+- (void)setOutputs:(NSMutableSet *)aSet {
 	if (aSet != _outputs) {
 		_outputs = aSet;
 	}
 }
-- (NSArray *)orderedOutputs
-{
-	
+
+- (NSArray *)orderedOutputs {
 	return [self orderedHoles:[self outputs]];
 }
 
 #pragma mark -
 #pragma mark *** geometry ***
 
-- (id) endHole:(NSPoint)aPoint
-{
+- (id) endHole:(NSPoint)aPoint {
 	NSPoint mousePos = [self convertPoint:aPoint fromView:[self superview]];
 	NSSize stringSize = [[self title] sizeWithAttributes:_stringAttributes];
 	float heightOfText = stringSize.height;
@@ -333,13 +294,11 @@ NSComparisonResult compare(id view1,id view2, void *context)
 	return nil;
 }
 
-- (id) startHole:(NSPoint)aPoint
-{
+- (id) startHole:(NSPoint)aPoint {
 	NSPoint mousePos = [self convertPoint:aPoint fromView:[self superview]];
 	NSSize stringSize = [[self title] sizeWithAttributes:_stringAttributes];
 	float heightOfText = stringSize.height;
-	if ((mousePos.x>[self bounds].origin.x+[self bounds].size.width-15)
-		&& (mousePos.x <[self bounds].origin.x+[self bounds].size.width)) {
+	if ((mousePos.x>[self bounds].origin.x+[self bounds].size.width-15) && (mousePos.x <[self bounds].origin.x+[self bounds].size.width)) {
 		int hole = (-mousePos.y + [self bounds].origin.y + [self bounds].size.height - [self verticalOffset] - heightOfText*0.5) / heightOfText;
 		id res = ((hole >0)&&(hole <=[[self outputs] count]))?[[self orderedOutputs] objectAtIndex:hole-1]:nil;
 		if (res) {
@@ -350,36 +309,27 @@ NSComparisonResult compare(id view1,id view2, void *context)
 	return nil;
 }
 
-- (NSPoint)endHolePoint:(id) aEndHole
-{
-	
+- (NSPoint)endHolePoint:(id)aEndHole {
 	NSSize stringSize = [[self title] sizeWithAttributes:_stringAttributes];
 	float heightOfText = stringSize.height;
 	
 	int hole =  [[self orderedHoles:[self inputs]] indexOfObject:aEndHole]+1;
 	
 	NSAssert( (hole <= [[self inputs] count]),@"hole should be within Inputs range in endholePoint:");
-	return [self convertPoint:NSMakePoint(5+4,[self bounds].origin.y+[self bounds].size.height - [self verticalOffset] - heightOfText * (hole+1.0))
-					   toView:[self superview]];
+	return [self convertPoint:NSMakePoint(5+4,[self bounds].origin.y+[self bounds].size.height - [self verticalOffset] - heightOfText * (hole+1.0)) toView:[self superview]];
 }
 
-- (NSPoint)startHolePoint:(id) aStartHole
-{
-	
+- (NSPoint)startHolePoint:(id) aStartHole {
 	NSSize stringSize = [[self title] sizeWithAttributes:_stringAttributes];
 	float heightOfText = stringSize.height;
 	
 	int hole =  [[self orderedHoles:[self outputs]] indexOfObject:aStartHole]+1;
 	
-	
 	NSAssert( (hole <= [[self outputs] count]),@"hole should be within Outputs range in startholePoint:");
-	return [self convertPoint:NSMakePoint([self bounds].origin.x+[self bounds].size.width-5-4,
-										  [self bounds].origin.y+[self bounds].size.height - [self verticalOffset] - heightOfText * (hole+1.0))
-					   toView:[self superview]];
+	return [self convertPoint:NSMakePoint([self bounds].origin.x+[self bounds].size.width-5-4, [self bounds].origin.y+[self bounds].size.height - [self verticalOffset] - heightOfText * (hole+1.0)) toView:[self superview]];
 }
 
-- (NSSize) minimalSize
-{
+- (NSSize) minimalSize {
 	NSSize titleSize = [[self title] sizeWithAttributes:_stringAttributes];
 	float maxInputWidth = 0;
 	int i;
@@ -405,35 +355,22 @@ NSComparisonResult compare(id view1,id view2, void *context)
 #pragma mark -
 #pragma mark *** drawing ***
 
-- (void)drawRect:(NSRect)rect
-{
+- (void)drawRect:(NSRect)rect {
 	NSRect bounds = NSInsetRect([self bounds],4,4);
 	const float backgroundAlpha = 0.7;
 	NSSize stringSize = [[self title] sizeWithAttributes:_stringAttributes];
 	//draw body background
 	[[[[self titleColor] blendedColorWithFraction:0.8 ofColor:[NSColor controlBackgroundColor]]colorWithAlphaComponent:backgroundAlpha] setFill];
-	[[NSBezierPath bezierPathWithBottomRoundedRect:NSMakeRect(bounds.origin.x,
-															  bounds.origin.y,
-															  bounds.size.width,
-															  bounds.size.height - stringSize.height) radius:8] fill];
+	[[NSBezierPath bezierPathWithBottomRoundedRect:NSMakeRect(bounds.origin.x, bounds.origin.y, bounds.size.width, bounds.size.height - stringSize.height) radius:8] fill];
 	
 	//draw title background
-	[[NSBezierPath bezierPathWithTopRoundedRect:NSMakeRect(bounds.origin.x,
-														   bounds.origin.y + bounds.size.height - stringSize.height,
-														   bounds.size.width,
-														   stringSize.height) radius:8] gradientFillWithColor:[[self titleColor] colorWithAlphaComponent:backgroundAlpha]];
-	
+	[[NSBezierPath bezierPathWithTopRoundedRect:NSMakeRect(bounds.origin.x, bounds.origin.y + bounds.size.height - stringSize.height, bounds.size.width, stringSize.height) radius:8] gradientFillWithColor:[[self titleColor] colorWithAlphaComponent:backgroundAlpha]];
 	
 	//draw title
-	[[self title] drawAtPoint:NSMakePoint(bounds.origin.x + (bounds.size.width -stringSize.width)/2,bounds.origin.y + bounds.size.height - stringSize.height) 
-			   withAttributes:_stringAttributes];
-	
+	[[self title] drawAtPoint:NSMakePoint(bounds.origin.x + (bounds.size.width -stringSize.width)/2,bounds.origin.y + bounds.size.height - stringSize.height) withAttributes:_stringAttributes];
 	
 	// draw end of lace
-	
-	NSEnumerator *enu = [[self inputs] objectEnumerator];
-	NSDictionary *aDict;
-	while ((aDict = [enu nextObject])) {		
+	for (NSDictionary *aDict in [self inputs]) {
 		NSBezierPath *path = [NSBezierPath bezierPath];
 		[path setLineWidth:1];
 		[[NSColor grayColor] set];
@@ -449,9 +386,7 @@ NSComparisonResult compare(id view1,id view2, void *context)
 	}
 	
 	// draw start of lace
-	
-	enu = [[self outputs] objectEnumerator];
-	while ((aDict = [enu nextObject])) {
+	for (NSDictionary *aDict in [self outputs]) {
 		NSBezierPath *path = [NSBezierPath bezierPath];
 		[path setLineWidth:1];
 		[[NSColor grayColor] set];
@@ -474,8 +409,7 @@ NSComparisonResult compare(id view1,id view2, void *context)
 	[shape stroke];
 }
 
--(void)setFrame:(NSRect)aRect
-{
+-(void)setFrame:(NSRect)aRect {
 	NSRect orFrame = [self frame];
 	if (orFrame.origin.x != aRect.origin.x) {
 		[self willChangeValueForKey:@"originX"];
@@ -517,111 +451,54 @@ NSComparisonResult compare(id view1,id view2, void *context)
 #pragma mark -
 #pragma mark *** events ***
 
-- (BOOL) acceptsFirstResponder
-{
+- (BOOL) acceptsFirstResponder {
 	return YES;
 }
 
-
-- (NSView *)hitTest:(NSPoint)aPoint
-{
+- (NSView *)hitTest:(NSPoint)aPoint {
 	return (([self startHole:aPoint] != nil) || ([self endHole:aPoint] != nil))?nil:[super hitTest:aPoint]; 
 }
 
-- (void)mouseDown:(NSEvent*)theEvent
-{
+- (void)mouseDown:(NSEvent*)theEvent {
 	EFLaceView* sView = (EFLaceView*)[self superview];
 	
-	if ([theEvent modifierFlags] & NSShiftKeyMask)	// inverse selection of view
-	{
+	if ([theEvent modifierFlags] & NSShiftKeyMask){
+		// inverse selection of view
 		[sView selectView:self state:![self selected]];
-	}
-	
-	else
-	{
-		if (!([theEvent modifierFlags] & NSCommandKeyMask)) { // if command click, add me to selection, else set selection to me
+	} else {
+		if (!([theEvent modifierFlags] & NSCommandKeyMask)) { 
+			// if command click, add me to selection, else set selection to me
 			[sView deselectViews];
 		}
 		[sView selectView:self state:YES];
-	}
-	BOOL _resize = NO;
-	NSPoint mousePos = [self convertPoint:[theEvent locationInWindow]  fromView:nil];
-	if ((mousePos.y < 8) && (mousePos.x > [self bounds].origin.x -8)) {
-		_resize = YES;
 	}
 	
 	BOOL keepOn = YES;
 	
 	NSPoint mouseLoc;
-	NSEvent* lastEvent = nil;
+	NSPoint lastMouseLoc = [[self superview] convertPoint:[theEvent locationInWindow] fromView:nil];;
 	NSRect initialFrame = [self frame];
-	NSPoint downPoint = [[self superview] convertPoint:[theEvent locationInWindow] fromView:nil];
-	
-	
-	[NSEvent startPeriodicEventsAfterDelay:0 withPeriod:0.1]; //if mouse keeps undragged outside the view, no event are sent. So send periodic ones, to do autoscrolling
 	
 	while (keepOn) {
-		
-		
         theEvent = [[self window] nextEventMatchingMask: NSLeftMouseUpMask | NSLeftMouseDraggedMask | NSPeriodicMask ];
-		
-		
         switch ([theEvent type]) {
             case NSLeftMouseDragged:
-				[((_resize)?[NSCursor crosshairCursor]:[NSCursor closedHandCursor]) set];
-				//[self autoscroll:theEvent];
-				
-				lastEvent = theEvent;
+				[[NSCursor closedHandCursor] set];
 				mouseLoc = [[self superview] convertPoint:[theEvent locationInWindow] fromView:nil];
-				if (_resize) {
-					[self setWidth:initialFrame.size.width+mouseLoc.x-downPoint.x];
-					[self setHeight:initialFrame.size.height-mouseLoc.y+downPoint.y];
-					[self setOriginY:initialFrame.origin.y + initialFrame.size.height - [self height]];
-					
-					
-				}
-					else {
-						[self setFrame: NSOffsetRect(initialFrame,mouseLoc.x-downPoint.x,mouseLoc.y-downPoint.y)];
-					}
-					[self autoscroll:theEvent];
+				[self setFrame: NSOffsetRect([self frame],mouseLoc.x-lastMouseLoc.x,mouseLoc.y-lastMouseLoc.y)];
+				lastMouseLoc = mouseLoc;
+				[self autoscroll:theEvent];
 				[sView setNeedsDisplay:YES];
 				break;
-			case NSPeriodic:
-				if (lastEvent != nil)
-				{ //for some reason, a NSPeriodic event has a wrong location, so work with previous (mouseDragged) one.
-				  //[self autoscroll:lastEvent];
-					
-					mouseLoc = [[self superview] convertPoint:[lastEvent locationInWindow] fromView:nil];
-					if (_resize) {
-						[self setWidth:initialFrame.size.width+mouseLoc.x-downPoint.x];
-						[self setHeight:initialFrame.size.height-mouseLoc.y+downPoint.y];
-						[self setOriginY:initialFrame.origin.y + initialFrame.size.height- [self height]];
-						
-						
-					}
-					else {
-						[self setFrame: NSOffsetRect(initialFrame,mouseLoc.x-downPoint.x,mouseLoc.y-downPoint.y)];
-					}
-					[self autoscroll:lastEvent];
-					[sView setNeedsDisplay:YES];
-				}
-				break;
             case NSLeftMouseUp:
-				[NSEvent stopPeriodicEvents];
-				[self willChangeValueForKey:@"originX"];
-				[self willChangeValueForKey:@"originY"];
 				[[NSCursor arrowCursor] set];
-				if (!NSContainsRect([sView bounds],[self frame])) { // revert to original frame if not inside superview
+				if (!NSContainsRect([sView bounds],[self frame])) { 
+					// revert to original frame if not inside superview
 					[self setFrame:initialFrame];
 					[sView setNeedsDisplay:YES];
 				}
-					keepOn = NO;
-				
-				[self didChangeValueForKey:@"originX"];
-				[self didChangeValueForKey:@"originY"];
+				keepOn = NO;
 				[sView setNeedsDisplay:YES];
-				
-				
 				break;
             default:
 				/* Ignore any other kind of event. */
@@ -631,8 +508,8 @@ NSComparisonResult compare(id view1,id view2, void *context)
     return;
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if (((keyPath == @"inputs") || keyPath == @"outputs") && (context == _inoutputObservationContext)) {
 		
 		NSSet *new = [change valueForKey:@"new"];
@@ -656,7 +533,6 @@ NSComparisonResult compare(id view1,id view2, void *context)
 			[anObject removeObserver:self forKeyPath:@"label"];
 			[anObject removeObserver:self forKeyPath:@"position"];
 		}
-		
 		
 		//update size and redraw
 		[self setWidth:MAX([self minimalSize].width,[self width])];

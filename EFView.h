@@ -45,7 +45,7 @@
 - (void)setVerticalOffset:(float)aValue;
 
 //	tag (used to manage the order of the views)
-- (int)tag;
+// - (NSInteger)tag; defined in NSView
 - (void)setTag:(int)newTag;
 
 // selected
