@@ -22,22 +22,6 @@ static void *_inoutputObservationContext = (void *)1094;
 @implementation EFView
 
 #pragma mark -
-#pragma mark *** utility functions ***
-NSComparisonResult compare(id view1,id view2, void *context);
-NSComparisonResult compare(id view1,id view2, void *context)
-{
-	// selected views are drawn on top of non selected ones
-	if (([view1 selected]) && (![view2 selected])) {
-		return NSOrderedDescending;
-	}
-	if ((![view1 selected]) && ([view2 selected])) {
-		return NSOrderedAscending;
-	}
-	//If both selected or both unselected, then the tag property is used
-	return ([(EFView*)view1 tag] > [(EFView*)view2 tag])?NSOrderedDescending:NSOrderedAscending;
-}
-
-#pragma mark -
 #pragma mark *** init routines ***
 - (id) init {
 	return [self initWithFrame:NSMakeRect(0,0,10,10)];
@@ -56,11 +40,8 @@ NSComparisonResult compare(id view1,id view2, void *context)
 		_title = @"Title bar";
 		NSSize titleSize = [[self title] sizeWithAttributes:_stringAttributes];
 		_titleColor = [NSColor greenColor];
-		
-		_tag = 1;
+
 		_verticalOffset = titleSize.height/2;
-		
-		[self setValue:[NSNumber numberWithBool:NO] forKey:@"selected"];
 		
 		[self setFrameSize:[self minimalSize]];
 		[self setNeedsDisplay:YES];
@@ -89,9 +70,6 @@ NSComparisonResult compare(id view1,id view2, void *context)
 	[self removeObserver:self forKeyPath:@"outputs"];
 }
 
-- (void)awakeFromNib {	
-	[[self superview] sortSubviewsUsingFunction:compare context:nil];
-}
 
 #pragma mark -
 #pragma mark *** setters and accessors ***
@@ -106,36 +84,8 @@ NSComparisonResult compare(id view1,id view2, void *context)
 	[[self superview] setNeedsDisplay:YES];
 }
 
-//selected
-- (void)setSelected:(BOOL)state {
-	EFLaceView* superView = (EFLaceView*)[self superview];
-	[superView sortSubviewsUsingFunction:compare context:nil];
-	[self setNeedsDisplay:YES];
-}
-
-- (BOOL)selected {
-	EFLaceView* superView = (EFLaceView*)[self superview];
-	NSIndexSet *currentSelection = [superView selectionIndexes];
-	unsigned myIndex = [[superView dataObjects] indexOfObject:[self valueForKey:@"data"]];
-	bool selected = [currentSelection containsIndex:myIndex];
-	return selected;
-}
-
-- (void)select {
-	[self setSelected:YES];
-}
-
-- (void)deselect {
-	[self setSelected:NO];
-}
-
-// tag
-- (void)setTag:(int)newTag {
-	if ([self tag] != newTag) {
-		_tag = newTag;
-		[[self superview] sortSubviewsUsingFunction:compare context:nil];
-		[self setNeedsDisplay:YES];
-	}
+- (BOOL)isSelected{
+	return [[(EFLaceView*)[self superview] selectedSubViews] containsObject:self];
 }
 
 // title color
@@ -160,29 +110,6 @@ NSComparisonResult compare(id view1,id view2, void *context)
 		_title = aTitle;
 		[self setWidth:MAX([self minimalSize].width,[self width])];
 		[self setNeedsDisplay:YES];
-	}
-}
-
-// drawingBounds
-- (NSDictionary *) drawingBounds {
-	NSRect boundsFrame = [self frame];
-	NSNumber* X = [NSNumber numberWithFloat:boundsFrame.origin.x];
-	NSNumber* Y = [NSNumber numberWithFloat:boundsFrame.origin.y];
-	NSNumber* W = [NSNumber numberWithFloat:boundsFrame.size.width];
-	NSNumber* H = [NSNumber numberWithFloat:boundsFrame.size.height];
-	return [NSDictionary dictionaryWithObjectsAndKeys: X,@"X", Y,@"Y", W,@"width", H,@"height", nil];
-}
-
-- (void) setDrawingBounds:(NSDictionary *)aDict {
-	if (![[self drawingBounds] isEqualToDictionary:aDict]) {
-		float X = [[aDict objectForKey:@"X"] floatValue];
-		float Y = [[aDict objectForKey:@"Y"] floatValue];
-		float W = [[aDict objectForKey:@"width"] floatValue];
-		float H = [[aDict objectForKey:@"height"] floatValue];	
-		[self setFrame:NSMakeRect(X,Y,W,H)];
-		[self setWidth:MAX([self minimalSize].width,[self width])];
-		[self setHeight:MAX([self minimalSize].height,[self height])];
-		[[self superview] setNeedsDisplay:YES];
 	}
 }
 
@@ -402,8 +329,8 @@ NSComparisonResult compare(id view1,id view2, void *context)
 	}
 	
 	//draw outline
-	[(([self selected])&&([NSGraphicsContext currentContextDrawingToScreen]))?[NSColor selectedControlColor]:[NSColor controlShadowColor] /*_titleColor*/ setStroke];
-	float lineWidth = (([self selected])&&([NSGraphicsContext currentContextDrawingToScreen]))?2.0:1.0;
+	[(([self isSelected])&&([NSGraphicsContext currentContextDrawingToScreen]))?[NSColor selectedControlColor]:[NSColor controlShadowColor] /*_titleColor*/ setStroke];
+	float lineWidth = (([self isSelected])&&([NSGraphicsContext currentContextDrawingToScreen]))?2.0:1.0;
 	NSBezierPath *shape = [NSBezierPath bezierPathWithRoundedRect:NSInsetRect(bounds,-lineWidth/2+0.15,-lineWidth/2+0.15) radius:8]; //0.15 to be perfect on a zoomed printing
 	[shape setLineWidth:lineWidth];
 	[shape stroke];
@@ -463,13 +390,13 @@ NSComparisonResult compare(id view1,id view2, void *context)
 	EFLaceView* sView = (EFLaceView*)[self superview];
 	
 	if ([theEvent modifierFlags] & NSShiftKeyMask){
-		// inverse selection of view
-		[sView selectView:self state:![self selected]];
-	} else {
-		if (!([theEvent modifierFlags] & NSCommandKeyMask)) { 
-			// if command click, add me to selection, else set selection to me
-			[sView deselectViews];
-		}
+		// add to selection
+		[sView selectView:self state:YES];
+	} else if ([theEvent modifierFlags] & NSCommandKeyMask){
+		// inverse selection
+		[sView selectView:self state:!self.isSelected];
+	} else if (!self.isSelected) {
+		[sView deselectViews];
 		[sView selectView:self state:YES];
 	}
 	
@@ -485,7 +412,9 @@ NSComparisonResult compare(id view1,id view2, void *context)
             case NSLeftMouseDragged:
 				[[NSCursor closedHandCursor] set];
 				mouseLoc = [[self superview] convertPoint:[theEvent locationInWindow] fromView:nil];
-				[self setFrame: NSOffsetRect([self frame],mouseLoc.x-lastMouseLoc.x,mouseLoc.y-lastMouseLoc.y)];
+				for (EFView* view in [(EFLaceView*)[self superview] selectedSubViews]) {
+					[view setFrame: NSOffsetRect([view frame],mouseLoc.x-lastMouseLoc.x,mouseLoc.y-lastMouseLoc.y)];
+				}
 				lastMouseLoc = mouseLoc;
 				[self autoscroll:theEvent];
 				[sView setNeedsDisplay:YES];

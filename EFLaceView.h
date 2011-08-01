@@ -19,9 +19,10 @@
 {
 	NSObject*		_dataObjectsContainer;
     NSString*		_dataObjectsKeyPath;
-	
 	NSObject*		_selectionIndexesContainer;
     NSString*		_selectionIndexesKeyPath;
+	
+	NSMutableSet*	selectedSubViews;
 	
 	NSArray*		_oldDataObjects;
 	
@@ -33,7 +34,6 @@
 	NSPoint			_rubberEnd;
 	BOOL			_isRubbing;
 	
-	id				_selectedLace;
 	id				_startHole;
 	id				_endHole;
 	
@@ -44,21 +44,6 @@
 	
 }
 
-#pragma mark -
-#pragma mark *** containers ***
-
-- (NSObject *)dataObjectsContainer;
-- (void)setDataObjectsContainer:(NSObject *)aDataObjectsContainer;
-
-
-- (NSObject *)selectionIndexesContainer;
-- (void)setSelectionIndexesContainer:(NSObject *)aSelectionIndexesContainer;
-
-- (NSString *)dataObjectsKeyPath;
-- (void)setDataObjectsKeyPath:(NSString *)aDataObjectsKeyPath;
-
-- (NSString *)selectionIndexesKeyPath;
-- (void)setSelectionIndexesKeyPath:(NSString *)aSelectionIndexesKeyPath;
 
 #pragma mark -
 #pragma mark *** bindings ***
@@ -88,11 +73,11 @@
 
 - (BOOL)isStartHole:(NSPoint)aPoint;
 - (BOOL)isEndHole:(NSPoint)aPoint;
-- (id)laceAtPoint:(NSPoint)aPoint;
 - (void)drawLinkFrom:(NSPoint)startPoint to:(NSPoint)endPoint color:(NSColor *)insideColor;
 - (void)deselectViews;
 - (void)selectView:(EFView *)aView;
 - (void)selectView:(EFView *)aView state:(BOOL)aBool;
+- (NSSet*)selectedSubViews;
 
 @end
 

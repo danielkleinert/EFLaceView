@@ -37,15 +37,9 @@ float treshold(float x,float tr) {
 #pragma mark -
 #pragma mark *** init routines ***
 
-- (id) initWithFrame:(NSRect)frame {
-	self = [super initWithFrame:frame];
-	if (self != nil) {
-		//selectedSubViews = [[NSMutableArray alloc] init];
-	}
-	return self;
+- (void)awakeFromNib {	
+	selectedSubViews = [[NSMutableSet alloc] init];
 }
-
-
 
 #pragma mark -
 #pragma mark *** bindings ***
@@ -55,26 +49,26 @@ float treshold(float x,float tr) {
 	[self exposeBinding:@"selectionIndexes"];
 }
 
-+ (NSSet *)keyPathsForValuesAffectingLaces {
-    return [NSSet setWithObjects:@"dataObjects", nil];
-}
-
 - (NSArray *)exposedBindings {
 	return [NSArray arrayWithObjects:@"dataObjects", @"selectedObjects", nil];
 } 
 
++ (NSSet *)keyPathsForValuesAffectingLaces {
+    return [NSSet setWithObjects:@"dataObjects", nil];
+} 
+
 - (void)bind:(NSString *)bindingName toObject:(id)observableObject withKeyPath:(NSString *)observableKeyPath options:(NSDictionary *)options {
-    if ([bindingName isEqualToString:@"dataObjects"])
-	{
-		[self setDataObjectsContainer:observableObject];
-		[self setDataObjectsKeyPath:observableKeyPath];
+    if ([bindingName isEqualToString:@"dataObjects"]) {
+		_dataObjectsContainer = observableObject;
+		_dataObjectsKeyPath = observableKeyPath;
 		[_dataObjectsContainer addObserver:self forKeyPath:_dataObjectsKeyPath options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld) context:_dataObjectsObservationContext];
 		[self startObservingDataObjects:[_dataObjectsContainer valueForKeyPath:_dataObjectsKeyPath]];
-    } else if ([bindingName isEqualToString:@"selectionIndexes"]) 	{
-		[self setSelectionIndexesContainer:observableObject];
-		[self setSelectionIndexesKeyPath:observableKeyPath];
+    } else if ([bindingName isEqualToString:@"selectionIndexes"]) {
+		_selectionIndexesContainer = observableObject;
+		_selectionIndexesKeyPath = observableKeyPath;
 		[_selectionIndexesContainer addObserver:self forKeyPath:_selectionIndexesKeyPath options:0 context:_selectionIndexesObservationContext];
     }
+	[self setOldDataObjects:[self dataObjects]];
 	[super bind:bindingName toObject:observableObject withKeyPath:observableKeyPath options:options];
     [self setNeedsDisplay:YES];
 }
@@ -84,14 +78,13 @@ float treshold(float x,float tr) {
     if ([bindingName isEqualToString:@"dataObjects"]) {
 		[self stopObservingDataObjects:[_dataObjectsContainer valueForKeyPath:_dataObjectsKeyPath]];
 		[_dataObjectsContainer removeObserver:self forKeyPath:_dataObjectsKeyPath];
-		[self setDataObjectsContainer:nil];
-		[self setDataObjectsKeyPath:nil];
+		_dataObjectsContainer = nil;
+		_dataObjectsKeyPath = nil;
     }
-	
 	if ([bindingName isEqualToString:@"selectionIndexes"]) {
 		[_selectionIndexesContainer removeObserver:self forKeyPath:_selectionIndexesKeyPath];
-		[self setSelectionIndexesContainer:nil];
-		[self setSelectionIndexesKeyPath:nil];
+		_selectionIndexesContainer = nil;
+		_selectionIndexesKeyPath = nil;
 	}
 	[super unbind:bindingName];
 	[self setNeedsDisplay:YES];
@@ -207,52 +200,6 @@ float treshold(float x,float tr) {
 	}
 }
 
-#pragma mark -
-#pragma mark *** containers ***
-
-- (NSObject *)dataObjectsContainer {
-    return _dataObjectsContainer; 
-}
-
-- (void)setDataObjectsContainer:(NSObject *)aDataObjectsContainer {
-	/*    if (_dataObjectsContainer != aDataObjectsContainer) {
-	 [_dataObjectsContainer release];
-	 _dataObjectsContainer = [aDataObjectsContainer retain];
-	 } */
-	_dataObjectsContainer = aDataObjectsContainer;
-}
-
-- (NSObject *)selectionIndexesContainer {
-    return _selectionIndexesContainer; 
-}
-
-- (void)setSelectionIndexesContainer:(NSObject *)aSelectionIndexesContainer {
-    /*if (_selectionIndexesContainer != aSelectionIndexesContainer) {
-	 [_selectionIndexesContainer release];
-	 _selectionIndexesContainer = [aSelectionIndexesContainer retain];
-	 }*/
-	_selectionIndexesContainer = aSelectionIndexesContainer;
-}
-
-- (NSString *)dataObjectsKeyPath {
-    return _dataObjectsKeyPath; 
-}
-
-- (void)setDataObjectsKeyPath:(NSString *)aDataObjectsKeyPath {
-    if (_dataObjectsKeyPath != aDataObjectsKeyPath) {
-        _dataObjectsKeyPath = [aDataObjectsKeyPath copy];
-    }
-}
-
-- (NSString *)selectionIndexesKeyPath {
-    return _selectionIndexesKeyPath; 
-}
-
-- (void)setSelectionIndexesKeyPath:(NSString *)aSelectionIndexesKeyPath {
-    if (_selectionIndexesKeyPath != aSelectionIndexesKeyPath) {
-        _selectionIndexesKeyPath = [aSelectionIndexesKeyPath copy];
-    }
-}
 
 #pragma mark -
 #pragma mark *** setters and accessors ***
@@ -398,25 +345,19 @@ float treshold(float x,float tr) {
 	//	}
 	
 	// Draw laces
-	NSEnumerator *startObjects = [[self dataObjects] objectEnumerator];
-	id startObject;
-	while ((startObject = [startObjects nextObject])) {
+	for (id startObject in [self dataObjects]) {
 		id startHoles = [startObject valueForKey:@"outputs"];
 		if ([startHoles count]>0) {
 			EFView* startView = [self viewForData:startObject];
-			NSEnumerator *startHolesEnum = [startHoles objectEnumerator];
-			id startHole;
-			while ((startHole = [startHolesEnum nextObject])) {
+			for (id startHole in startHoles) {
 				NSSet * endHoles = [startHole valueForKey:@"laces"];
 				if ([endHoles count]>0) {
 					NSPoint startPoint = [startView startHolePoint:startHole];
-					NSEnumerator * endHolesEnum = [endHoles objectEnumerator];
-					id endHole;
-					while ((endHole = [endHolesEnum nextObject])) {
+					for (id endHole in endHoles) {
 						id endData = [endHole valueForKey:@"data"];
 						EFView* endView = [self viewForData:endData];
 						NSPoint endPoint = [endView endHolePoint:endHole];
-						if (([_selectedLace valueForKey:@"startHole"]==startHole) &&([_selectedLace valueForKey:@"endHole"]==endHole)) {
+						if (startView.isSelected || endView.isSelected) {
 							[self drawLinkFrom:startPoint to:endPoint color:([NSGraphicsContext currentContextDrawingToScreen])?[NSColor selectedControlColor]:[NSColor yellowColor]];
 						} else {
 							[self drawLinkFrom:startPoint to:endPoint color:[NSColor yellowColor]];
@@ -455,7 +396,11 @@ float treshold(float x,float tr) {
 
 - (void)deselectViews {
 	[_selectionIndexesContainer setValue:nil forKeyPath:_selectionIndexesKeyPath];
-	[[self subviews] makeObjectsPerformSelector:@selector(deselect)];
+	NSSet* nowUnselectedViews = [selectedSubViews copy];
+	[selectedSubViews removeAllObjects];
+	for (EFView* view in nowUnselectedViews) {
+		[view setNeedsDisplay:YES];
+	}
 }
 
 - (void)selectView:(EFView *)aView {
@@ -468,12 +413,18 @@ float treshold(float x,float tr) {
 	
 	if (select) {
 		[(NSMutableIndexSet *)selection addIndex:DataObjectIndex];
+		[selectedSubViews addObject:aView];
 	} else {
 		[(NSMutableIndexSet *)selection removeIndex:DataObjectIndex];
+		[selectedSubViews removeObject:aView];
 	}
 	[_selectionIndexesContainer setValue:selection forKeyPath:_selectionIndexesKeyPath];
 	
-	[aView setSelected:select];
+	[aView setNeedsDisplay:YES];
+}
+
+- (NSSet*)selectedSubViews{
+	return selectedSubViews;
 }
 
 - (BOOL)isStartHole:(NSPoint)aPoint {
@@ -501,44 +452,6 @@ float treshold(float x,float tr) {
 		}
 	}
 	return NO;
-}
-
-- (id) laceAtPoint:(NSPoint)aPoint {
-	NSEnumerator *enu = [[self laces] objectEnumerator];
-	NSDictionary *aDict;
-	while ((aDict = [enu nextObject])) {
-		NSDictionary* startHole = [aDict objectForKey:@"startHole"];
-		NSDictionary* endHole = [aDict objectForKey:@"endHole"] ;
-		
-		id startData = [startHole valueForKey:@"data"];
-		id  endData = [endHole valueForKey:@"data"];
-		
-		NSPoint startPoint = [[self viewForData:startData] startHolePoint:startHole];
-		NSPoint endPoint = [[self viewForData:endData] endHolePoint:endHole];		
-		
-		NSPoint p0 = NSMakePoint(startPoint.x,startPoint.y );
-		NSPoint p1 = NSMakePoint(startPoint.x+treshold((endPoint.x - startPoint.x)/2,30),startPoint.y);
-		NSPoint p2 = NSMakePoint(endPoint.x -treshold((endPoint.x - startPoint.x)/2,30),endPoint.y );	
-		NSPoint p3 = NSMakePoint(endPoint.x,endPoint.y );
-		
-		float dx = p0.y - p3.y;
-		float dy = p3.x - p0.x;
-		float d = sqrt(dx*dx+dy*dy);
-		dx = 5*dx/d;
-		dy = 5*dy/d;
-		
-		NSBezierPath *path = [NSBezierPath bezierPath];
-		[path moveToPoint:NSMakePoint(p0.x-dx, p0.y-dy)];
-		[path curveToPoint:NSMakePoint(p3.x-dx, p3.y-dy) controlPoint1:NSMakePoint(p1.x-dx, p1.y-dy) controlPoint2:NSMakePoint(p2.x-dx, p2.y-dy)];
-		[path lineToPoint:NSMakePoint(p3.x+dx, p3.y+dy)];
-		[path curveToPoint:NSMakePoint(p0.x+dx, p0.y+dy) controlPoint1:NSMakePoint(p2.x+dx, p2.y+dy) controlPoint2:NSMakePoint(p1.x+dx, p1.y+dy)];
-		[path closePath];
-		
-		if([path containsPoint:aPoint]) {
-			return aDict;
-		}
-	}
-	return nil;
 }
 
 #pragma mark -
@@ -570,31 +483,12 @@ float treshold(float x,float tr) {
 	return YES;
 }
 
-- (void)keyDown:(NSEvent*)theEvent {
-	if(([theEvent keyCode] == kVK_Delete) && _selectedLace) {
-		id startHole = [_selectedLace valueForKey:@"startHole"];
-		id endHole = [_selectedLace valueForKey:@"endHole"];
-		
-		[self willChangeValueForKey:@"laces"];
-		[endHole willChangeValueForKey:@"laces"];
-		[startHole willChangeValueForKey:@"laces"];
-		
-		[[startHole mutableSetValueForKey:@"laces"] removeObject:endHole];
-		[[endHole mutableSetValueForKey:@"laces"] removeObject:startHole];
-		
-		[endHole didChangeValueForKey:@"laces"];
-		[startHole didChangeValueForKey:@"laces"];
-		[self didChangeValueForKey:@"laces"];
-		
-		_selectedLace = nil;
-		[self setNeedsDisplay:YES];
-		return;
-	}
-	
-	if(([theEvent keyCode] == kVK_Delete) && [[self selectionIndexes] count]>0) {
-		if ([self.dataObjectsContainer respondsToSelector:@selector(remove:)]) {
+- (void)keyDown:(NSEvent*)theEvent {	
+	if([theEvent keyCode] == kVK_Delete) {
+		if ([_dataObjectsContainer respondsToSelector:@selector(remove:)]) {
 			// remove selected item
-			[self.dataObjectsContainer performSelector:@selector(remove:) withObject:self];
+			[_dataObjectsContainer performSelector:@selector(remove:) withObject:self];
+			[selectedSubViews removeAllObjects];
 			[self setNeedsDisplay:YES];
 			return;
 		}
@@ -613,54 +507,47 @@ float treshold(float x,float tr) {
 	NSPoint mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
 	
 	// Did we click on a start hole ?
-	if (![self isStartHole:mouseLoc]) { // clicked outside a hole for begining a new lace
+	if (![self isStartHole:mouseLoc]) { 
+		// clicked outside a hole for begining a new lace
 		// Did we click on an end hole ?
-		if (![self isEndHole:mouseLoc]) { // clicked outside any hole : so manage selections
-			id select = [self laceAtPoint:mouseLoc ];
-			if (!select) { // didn't click on a lace so select/deselect views
-				[self deselectViews];
-				
-				//Rubberband selection
-				_isRubbing = YES;
-				_rubberStart = mouseLoc;
-				_rubberEnd = mouseLoc;
-				BOOL keepOn = YES;
-				
-				NSRect rubber;
-				
-				while (keepOn) {
-					theEvent = [[self window] nextEventMatchingMask: NSLeftMouseUpMask | NSLeftMouseDraggedMask];
-					mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
-					_rubberEnd = mouseLoc;
-					rubber = NSUnionRect(NSMakeRect(_rubberStart.x,_rubberStart.y,0.1,0.1),NSMakeRect(_rubberEnd.x,_rubberEnd.y,0.1,0.1));
-					
-					switch ([theEvent type]) {
-						case NSLeftMouseDragged: {
-							// find views partially inside rubber and select them
-							for (EFView* aView in [[self subviews] copy]) {
-								[self selectView:aView state:NSIntersectsRect([aView frame],rubber)];
-							}
-							[self setNeedsDisplay:YES];
-							break;
-						}
-						case NSLeftMouseUp: {
-							keepOn = NO;
-							_isRubbing = NO;
-							
-							[self setNeedsDisplay:YES];
-							break;
-						}
-						default:
-							/* Ignore any other kind of event. */
-							break;
-					}
-				}
-			}
+		if (![self isEndHole:mouseLoc]) { 
+			// clicked outside any hole : so manage selections
+			[self deselectViews];
 			
-			// We clicked on a lace
-			if (select != _selectedLace) { // change selection of lace
-				_selectedLace = select;
-				[self setNeedsDisplay:YES];
+			//Rubberband selection
+			_isRubbing = YES;
+			_rubberStart = mouseLoc;
+			_rubberEnd = mouseLoc;
+			BOOL keepOn = YES;
+			
+			NSRect rubber;
+			
+			while (keepOn) {
+				theEvent = [[self window] nextEventMatchingMask: NSLeftMouseUpMask | NSLeftMouseDraggedMask];
+				mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+				_rubberEnd = mouseLoc;
+				rubber = NSUnionRect(NSMakeRect(_rubberStart.x,_rubberStart.y,0.1,0.1),NSMakeRect(_rubberEnd.x,_rubberEnd.y,0.1,0.1));
+				
+				switch ([theEvent type]) {
+					case NSLeftMouseDragged: {
+						// find views partially inside rubber and select them
+						for (EFView* aView in [[self subviews] copy]) {
+							[self selectView:aView state:NSIntersectsRect([aView frame],rubber)];
+						}
+						[self setNeedsDisplay:YES];
+						break;
+					}
+					case NSLeftMouseUp: {
+						keepOn = NO;
+						_isRubbing = NO;
+						
+						[self setNeedsDisplay:YES];
+						break;
+					}
+					default:
+						/* Ignore any other kind of event. */
+						break;
+				}
 			}
 			return;
 		}
@@ -684,8 +571,6 @@ float treshold(float x,float tr) {
 		
 		[[_startHole mutableSetValueForKey:@"laces"] removeObject:_endHole];
 		[[_endHole mutableSetValueForKey:@"laces"] removeObject:_startHole];
-		
-		_selectedLace = nil; //deselect previously selected lace
 		
 		_startPoint = [_startSubView startHolePoint:_startHole];
 	} else { // we clicked on a start hole

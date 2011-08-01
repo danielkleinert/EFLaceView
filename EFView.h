@@ -44,15 +44,8 @@
 - (float)verticalOffset;
 - (void)setVerticalOffset:(float)aValue;
 
-//	tag (used to manage the order of the views)
-// - (NSInteger)tag; defined in NSView
-- (void)setTag:(int)newTag;
-
 // selected
-- (BOOL)selected;
-- (void)setSelected:(BOOL)state;
-- (void)select;
-- (void)deselect;
+- (BOOL)isSelected;
 
 // title
 - (NSString *)title;
@@ -63,8 +56,6 @@
 - (void)setTitleColor:(NSColor *)aColor;
 
 #pragma mark drawingbounds
-- (NSDictionary *) drawingBounds;
-- (void) setDrawingBounds:(NSDictionary *)aDict;
 - (float) originX;
 - (float) originY;
 - (float) width;
