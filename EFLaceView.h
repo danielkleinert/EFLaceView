@@ -22,8 +22,6 @@
 	NSObject*		_selectionIndexesContainer;
     NSString*		_selectionIndexesKeyPath;
 	
-	NSMutableSet*	selectedSubViews;
-	
 	NSArray*		_oldDataObjects;
 	
 	BOOL			_isMaking;
@@ -77,7 +75,9 @@
 - (void)deselectViews;
 - (void)selectView:(EFView *)aView;
 - (void)selectView:(EFView *)aView state:(BOOL)aBool;
-- (NSSet*)selectedSubViews;
+- (NSArray*)selectedSubViews;
+
+- (void) connectHole:(id)startHole  toHole:(id)endHole;
 
 @end
 

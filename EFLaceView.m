@@ -35,13 +35,6 @@ float treshold(float x,float tr) {
 }
 
 #pragma mark -
-#pragma mark *** init routines ***
-
-- (void)awakeFromNib {	
-	selectedSubViews = [[NSMutableSet alloc] init];
-}
-
-#pragma mark -
 #pragma mark *** bindings ***
 
 + (void)initialize {
@@ -195,7 +188,9 @@ float treshold(float x,float tr) {
 	}
 	
 	if (context == _selectionIndexesObservationContext) {
-		[self setNeedsDisplay:YES];
+		for (NSView* view in [self subviews]) {
+			[view setNeedsDisplay:YES];
+		}
 		return;
 	}
 }
@@ -220,10 +215,10 @@ float treshold(float x,float tr) {
 	return [_dataObjectsContainer valueForKeyPath:_dataObjectsKeyPath];
 }
 
-- (EFView*)viewForData:(id)aData {
-	for (EFView* aView in [self subviews]) {
-		if ([aView valueForKey:@"data"] == aData) {
-			return aView;
+- (EFView*)viewForData:(id)data {
+	for (EFView* view in [self subviews]) {
+		if ([view valueForKey:@"data"] == data) {
+			return view;
 		}
 	}
 	return nil;
@@ -396,11 +391,6 @@ float treshold(float x,float tr) {
 
 - (void)deselectViews {
 	[_selectionIndexesContainer setValue:nil forKeyPath:_selectionIndexesKeyPath];
-	NSSet* nowUnselectedViews = [selectedSubViews copy];
-	[selectedSubViews removeAllObjects];
-	for (EFView* view in nowUnselectedViews) {
-		[view setNeedsDisplay:YES];
-	}
 }
 
 - (void)selectView:(EFView *)aView {
@@ -408,23 +398,20 @@ float treshold(float x,float tr) {
 }
 
 - (void)selectView:(EFView *)aView state:(BOOL)select {
-	NSIndexSet *selection = [[self selectionIndexes] mutableCopy];
+	NSMutableIndexSet *selection = [[self selectionIndexes] mutableCopy];
 	unsigned int DataObjectIndex = [[self dataObjects] indexOfObject:[aView valueForKey:@"data"]];
-	
 	if (select) {
-		[(NSMutableIndexSet *)selection addIndex:DataObjectIndex];
-		[selectedSubViews addObject:aView];
+		[selection addIndex:DataObjectIndex];
 	} else {
-		[(NSMutableIndexSet *)selection removeIndex:DataObjectIndex];
-		[selectedSubViews removeObject:aView];
+		[selection removeIndex:DataObjectIndex];
 	}
 	[_selectionIndexesContainer setValue:selection forKeyPath:_selectionIndexesKeyPath];
-	
-	[aView setNeedsDisplay:YES];
 }
 
-- (NSSet*)selectedSubViews{
-	return selectedSubViews;
+- (NSArray*)selectedSubViews{
+	NSArray *selectedDataObjects = [[self dataObjects] objectsAtIndexes:[self selectionIndexes]];
+	NSPredicate *predicate = [NSPredicate predicateWithFormat:@"data IN %@", selectedDataObjects];
+	return [[self subviews] filteredArrayUsingPredicate:predicate];
 }
 
 - (BOOL)isStartHole:(NSPoint)aPoint {
@@ -488,7 +475,6 @@ float treshold(float x,float tr) {
 		if ([_dataObjectsContainer respondsToSelector:@selector(remove:)]) {
 			// remove selected item
 			[_dataObjectsContainer performSelector:@selector(remove:) withObject:self];
-			[selectedSubViews removeAllObjects];
 			[self setNeedsDisplay:YES];
 			return;
 		}

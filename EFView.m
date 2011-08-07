@@ -409,16 +409,17 @@ static void *_inoutputObservationContext = (void *)1094;
 	while (keepOn) {
         theEvent = [[self window] nextEventMatchingMask: NSLeftMouseUpMask | NSLeftMouseDraggedMask | NSPeriodicMask ];
         switch ([theEvent type]) {
-            case NSLeftMouseDragged:
+            case NSLeftMouseDragged: {
 				[[NSCursor closedHandCursor] set];
 				mouseLoc = [[self superview] convertPoint:[theEvent locationInWindow] fromView:nil];
-				for (EFView* view in [(EFLaceView*)[self superview] selectedSubViews]) {
+				for (NSView* view in [sView selectedSubViews]) {
 					[view setFrame: NSOffsetRect([view frame],mouseLoc.x-lastMouseLoc.x,mouseLoc.y-lastMouseLoc.y)];
 				}
 				lastMouseLoc = mouseLoc;
 				[self autoscroll:theEvent];
 				[sView setNeedsDisplay:YES];
 				break;
+			}
             case NSLeftMouseUp:
 				[[NSCursor arrowCursor] set];
 				if (!NSContainsRect([sView bounds],[self frame])) { 
