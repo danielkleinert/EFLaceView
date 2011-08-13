@@ -457,11 +457,13 @@ static void *_inoutputObservationContext = (void *)1094;
 		for (id anObject in inserted) {
 			[anObject addObserver:self forKeyPath:@"label" options:0 context:_inoutputObservationContext];
 			[anObject addObserver:self forKeyPath:@"position" options:0 context:_inoutputObservationContext];
+			[anObject addObserver:self forKeyPath:@"laces" options:0 context:_inoutputObservationContext];
 		}
 		
 		for (id anObject in removed) {
 			[anObject removeObserver:self forKeyPath:@"label"];
 			[anObject removeObserver:self forKeyPath:@"position"];
+			[anObject removeObserver:self forKeyPath:@"laces"];
 		}
 		
 		//update size and redraw
@@ -478,7 +480,10 @@ static void *_inoutputObservationContext = (void *)1094;
 	if ((keyPath == @"position") && (context == _inoutputObservationContext) ) {
 		//redraw superview (laces may have changed because of positions of labels)
 		[[self superview] setNeedsDisplay:YES];
-		
+	}
+	if ([keyPath isEqualToString:@"laces"]) {
+		//redraw laces because of undos
+		[[self superview] setNeedsDisplay:YES];
 	}
 }
 @end

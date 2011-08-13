@@ -55,21 +55,22 @@ float treshold(float x,float tr) {
 		_dataObjectsContainer = observableObject;
 		_dataObjectsKeyPath = observableKeyPath;
 		[_dataObjectsContainer addObserver:self forKeyPath:_dataObjectsKeyPath options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld) context:_dataObjectsObservationContext];
-		[self startObservingDataObjects:[_dataObjectsContainer valueForKeyPath:_dataObjectsKeyPath]];
+		[self startObservingDataObjects:[self dataObjects]];
+		[self setOldDataObjects:[self dataObjects]];
     } else if ([bindingName isEqualToString:@"selectionIndexes"]) {
 		_selectionIndexesContainer = observableObject;
 		_selectionIndexesKeyPath = observableKeyPath;
 		[_selectionIndexesContainer addObserver:self forKeyPath:_selectionIndexesKeyPath options:0 context:_selectionIndexesObservationContext];
-    }
-	[self setOldDataObjects:[self dataObjects]];
-	[super bind:bindingName toObject:observableObject withKeyPath:observableKeyPath options:options];
+    } else {
+		[super bind:bindingName toObject:observableObject withKeyPath:observableKeyPath options:options];
+	}	
     [self setNeedsDisplay:YES];
 }
 
 
 - (void)unbind:(NSString *)bindingName {
     if ([bindingName isEqualToString:@"dataObjects"]) {
-		[self stopObservingDataObjects:[_dataObjectsContainer valueForKeyPath:_dataObjectsKeyPath]];
+		[self stopObservingDataObjects:[self dataObjects]];
 		[_dataObjectsContainer removeObserver:self forKeyPath:_dataObjectsKeyPath];
 		_dataObjectsContainer = nil;
 		_dataObjectsKeyPath = nil;
@@ -78,8 +79,9 @@ float treshold(float x,float tr) {
 		[_selectionIndexesContainer removeObserver:self forKeyPath:_selectionIndexesKeyPath];
 		_selectionIndexesContainer = nil;
 		_selectionIndexesKeyPath = nil;
+	} else {
+		[super unbind:bindingName];
 	}
-	[super unbind:bindingName];
 	[self setNeedsDisplay:YES];
 }
 
@@ -170,10 +172,12 @@ float treshold(float x,float tr) {
 		NSArray *_newDataObjects = [object valueForKeyPath:_dataObjectsKeyPath];		
 		
 		NSMutableArray *onlyNew = [_newDataObjects mutableCopy];
+		[onlyNew removeObject:[NSNull null]];
 		[onlyNew removeObjectsInArray:_oldDataObjects];
 		[self startObservingDataObjects:onlyNew];
 		
 		NSMutableArray *removed = [_oldDataObjects mutableCopy];
+		[removed removeObject:[NSNull null]];
 		[removed removeObjectsInArray:_newDataObjects];
 		[self stopObservingDataObjects:removed];
 		
@@ -212,7 +216,9 @@ float treshold(float x,float tr) {
 // dataObjects
 
 - (NSArray *)dataObjects {
-	return [_dataObjectsContainer valueForKeyPath:_dataObjectsKeyPath];
+	NSMutableArray *result = [[_dataObjectsContainer valueForKeyPath:_dataObjectsKeyPath] mutableCopy];
+	[result removeObject:[NSNull null]];
+	return result;
 }
 
 - (EFView*)viewForData:(id)data {
@@ -559,6 +565,7 @@ float treshold(float x,float tr) {
 		[[_endHole mutableSetValueForKey:@"laces"] removeObject:_startHole];
 		
 		_startPoint = [_startSubView startHolePoint:_startHole];
+		_endPoint = mouseLoc;
 	} else { // we clicked on a start hole
 		_startPoint = [_startSubView startHolePoint:_startHole];
 	}
